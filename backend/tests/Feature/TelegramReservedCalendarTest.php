@@ -69,7 +69,8 @@ test('календарь вручается по закреплённому ID �
     Carbon::setTestNow('2026-12-01 07:01:00 UTC');
     $start(2, $recipientId, $newUsername)->assertNoContent();
     expect($calendar->refresh()->claimed_at?->timestamp)->toBe(now()->timestamp);
-    $message = WidgetMessage::query()->sole();
+    $message = WidgetMessage::query()->whereNull('gift_date')->sole();
+    expect(MorningDelivery::query()->where('gift_date', '2026-12-01')->sole()->status)->toBe('sent');
     expect($message->recipient_id)->toBe($recipientId)
         ->and($message->calendar_id)->toBe($calendar->id)
         ->and(app(AnswerWidgetAction::class)->execute($recipientId, $message->id, 'open:1'))->toContain('Вопрос дня');
@@ -81,7 +82,7 @@ test('календарь вручается по закреплённому ID �
     expect($calendar->refresh()->claimed_at?->timestamp)->toBe($opened)
         ->and($first->refresh()->opened_at?->timestamp)->toBe($opened);
     Artisan::call('calendar:morning');
-    $delivery = MorningDelivery::query()->sole();
+    $delivery = MorningDelivery::query()->where('gift_date', '2026-12-02')->sole();
     expect($delivery->recipient_id)->toBe($recipientId)
         ->and($delivery->gift_date)->toBe('2026-12-02')
         ->and($delivery->status)->toBe('sent');

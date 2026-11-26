@@ -1,0 +1,396 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "today-delivery-fast-tdd",
+  "slug": "today-delivery",
+  "revision": 1,
+  "supersedes": null,
+  "title": "Уведомление за сегодня без потери дня",
+  "goal": "Публикация себе и поздний /start запускают сегодняшнюю карточку сразу после сохранения.",
+  "createdAt": "2026-11-26T19:46:38Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-API-006",
+      "ARCH-BE-003",
+      "ARCH-BE-004",
+      "ARCH-BE-006",
+      "ARCH-BE-007",
+      "ARCH-BE-012",
+      "ARCH-BE-013",
+      "ARCH-BE-014",
+      "ARCH-CALENDAR-001",
+      "ARCH-CALENDAR-002",
+      "ARCH-DOC-002",
+      "ARCH-LOCAL-001",
+      "ARCH-MOD-001",
+      "ARCH-MOD-002",
+      "ARCH-PERF-003",
+      "ARCH-PLAN-001",
+      "ARCH-SRC-002",
+      "ARCH-TELEGRAM-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Публикация себе, позднее вручение через /start, общая рассылка, мастерская, поведенческие тесты и профильные документы."
+    ],
+    "out": [
+      "Новые схемы БД и HTTP endpoints, изменение политики unknown/blocked, деплой и вызов настоящего Telegram."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "functional",
+      "statement": "Публикация себе с сегодняшним подарком с 10:00 сразу запускает доставку после коммита.",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Публикация себе с сегодняшним подарком с 10:00 сразу запускает доставку после коммита."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "statement": "Поздний /start вручает календарь и сразу запускает сегодняшнюю доставку по нику или закреплённому ID.",
+      "acceptance": [
+        {
+          "id": "AC-002",
+          "statement": "Поздний /start вручает календарь и сразу запускает сегодняшнюю доставку по нику или закреплённому ID."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Одна карточка на получателя и день; границы времени, rollback, scheduler и локальные часы сохраняют корректность.",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "Одна карточка на получателя и день; границы времени, rollback, scheduler и локальные часы сохраняют корректность."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Бизнес-сценарии",
+      "objective": "Публикация себе с сегодняшним подарком с 10:00 сразу запускает доставку после коммита.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Проверить бизнес-сценарии публикации себе и позднего вручения календаря.",
+          "expected": "Независимый анализ подтверждает согласованное поведение и указывает проверяемые риски."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "russian-editor",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "acceptanceIds": [
+        "AC-001"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Архитектура и данные",
+      "objective": "Поздний /start вручает календарь и сразу запускает сегодняшнюю доставку по нику или закреплённому ID.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Проверить транзакции, scoped dispatcher, очередь afterCommit и потребителей.",
+          "expected": "Независимый анализ подтверждает согласованное поведение и указывает проверяемые риски."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "acceptanceIds": [
+        "AC-002"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "ТДД и риски",
+      "objective": "Одна карточка на получателя и день; границы времени, rollback, scheduler и локальные часы сохраняют корректность.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Проверить поведенческие тесты, реальную очередь, rollback, гонки и виртуальные часы.",
+          "expected": "Независимый анализ подтверждает согласованное поведение и указывает проверяемые риски."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "tdd",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        }
+      ],
+      "requirementIds": [
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-003"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "002",
+      "title": "Сегодняшняя доставка без ожидания планировщика",
+      "objective": "Оба публичных пути запускают одну сегодняшнюю доставку после коммита; мастерская воспроизводит их.",
+      "agentRole": "runtime",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "README.md",
+        "backend/app/Calendar/Actions/PublishCalendarAction.php",
+        "backend/app/Studio/Actions/StartPreviewChatAction.php",
+        "backend/app/Telegram/Actions/DispatchMorningRemindersAction.php",
+        "backend/app/Telegram/Actions/PrepareStartUpdateAction.php",
+        "backend/app/Telegram/Contracts/MorningDeliveryRepository.php",
+        "backend/app/Telegram/Infrastructure/Persistence/PostgresMorningDeliveryRepository.php",
+        "backend/tests/Feature/TelegramReservedCalendarTest.php",
+        "backend/tests/Feature/TelegramStartReplayTest.php",
+        "backend/tests/Feature/TelegramTodayDeliveryTest.php",
+        "backend/tests/Feature/TelegramWidgetTest.php",
+        "docs/INFRASTRUCTURE.md",
+        "docs/backend/model-business-evidence.md",
+        "docs/backend/telegram.md",
+        "docs/contracts/openapi.json",
+        "docs/flows/morning-delivery.md",
+        "docs/flows/publish-calendar.md",
+        "docs/flows/staff-support.md"
+      ],
+      "createPaths": [
+        "backend/tests/Feature/TelegramTodayDeliveryTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "tdd",
+          "command": "make test-suite suite=TelegramTodayDeliveryTest",
+          "expected": "RED: отсутствует сегодняшнее задание после публикации/вручения; GREEN: реальные задания и воркер выполняют все согласованные сценарии."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "verification"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "tdd",
+          "applyAt": [
+            "red",
+            "green",
+            "verification"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "red",
+            "green",
+            "verification"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        },
+        {
+          "id": "russian-editor",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Проверить согласованное поведение через существующие границы.",
+          "expectedOutcome": "Минимальное изменение с поведенческим доказательством без дублирования отправки."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    }
+  ]
+}

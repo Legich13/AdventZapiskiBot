@@ -13,8 +13,8 @@ interface MorningDeliveryRepository
     /** Восстанавливает задания после остановки планировщика или воркера. */
     public function recover(string $today, CarbonImmutable $staleBefore, ?int $viewerId): void;
 
-    /** Резервирует дату для всех получивших календарь до отсечки. */
-    public function reserveEligible(string $date, CarbonImmutable $cutoff, ?int $viewerId): void;
+    /** Резервирует дату для получивших календарь к текущему моменту. */
+    public function reserveEligible(string $date, CarbonImmutable $receivedBy, ?int $viewerId): void;
 
     /** @return iterable<int> Только готовые к постановке в очередь идентификаторы. */
     public function dueIds(string $date, ?int $viewerId): iterable;

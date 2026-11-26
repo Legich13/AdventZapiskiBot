@@ -14,6 +14,7 @@ use App\Studio\Actions\StartPreviewChatAction;
 use App\Studio\DemoProfiles;
 use App\Telegram\Actions\AnswerWidgetAction;
 use App\Telegram\Services\WidgetInboxService;
+use App\Telegram\Services\WidgetRenderer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -21,11 +22,16 @@ use Illuminate\Http\Request;
 
 final class DevController
 {
-    public function index(Request $request, WidgetInboxService $inbox): View
+    public function index(Request $request, WidgetInboxService $inbox, WidgetRenderer $renderer): View
     {
         $viewer = $request->session()->get('telegram_id');
 
-        return view('dev', ['profiles' => DemoProfiles::PEOPLE, 'viewer' => $viewer, 'messages' => $inbox->forViewer(is_int($viewer) ? $viewer : null)]);
+        return view('dev', [
+            'profiles' => DemoProfiles::PEOPLE,
+            'viewer' => $viewer,
+            'messages' => $inbox->forViewer(is_int($viewer) ? $viewer : null),
+            'welcome' => is_int($viewer) ? $renderer->renderWelcome(url('/app')) : null,
+        ]);
     }
 
     public function staff(OpenPreviewPanelAction $login): RedirectResponse

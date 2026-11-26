@@ -11,7 +11,8 @@
 @if($viewer)<div class="tools"><a class="btn" href="/app">Открыть Mini App ↗</a><form method="post" action="/dev/start">@csrf<button>Запустить /start</button></form><form method="post" action="/dev/morning">@csrf<button>Запустить утреннюю рассылку</button></form></div>@endif
 </section><section class="sheet inbox"><h2>Личный чат</h2>
 @if(session('notice'))<p role="status" class="notice">{{ session('notice') }}</p>@endif
+@if($welcome)<article class="chat-item"><div class="chat-label"><strong>Приветствие бота</strong></div><iframe title="Приветствие бота" srcdoc="{{ $welcome->html }}"></iframe></article>@endif
 @forelse($messages as $msg)<article class="chat-item"><div class="chat-label"><strong>{{ $msg->giftDate ? 'Утренний подарок' : 'Календарь' }}</strong><a href="/dev/widget/{{ $msg->id }}" target="_blank" rel="noopener">Открыть ↗</a></div>@if($loop->index < 2)<iframe title="{{ $msg->giftDate ? 'Утренняя карточка' : 'Календарь' }}" loading="lazy" src="/dev/widget/{{ $msg->id }}"></iframe>@endif</article>
-@empty<div class="empty"><span aria-hidden="true">✧</span><p>Здесь появятся сообщения бота</p><small>Выберите профиль и запустите /start.</small></div>@endforelse
+@empty<div class="empty"><span aria-hidden="true">✧</span>@if($welcome)<p>Полученных календарей пока нет.</p><small>Создайте свой календарь или запустите /start, чтобы получить подарок.</small>@else<p>Здесь появятся сообщения бота</p><small>Выберите профиль и запустите /start.</small>@endif</div>@endforelse
 </section></div>
 @endsection

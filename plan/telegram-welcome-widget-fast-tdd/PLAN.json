@@ -1,0 +1,516 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "telegram-welcome-widget-fast-tdd",
+  "slug": "telegram-welcome-widget",
+  "revision": 1,
+  "supersedes": null,
+  "title": "Приветственный виджет в общем стиле календаря",
+  "goal": "Приветствие /start использует существующий красный виджет со встроенной CTA открытия редактора.",
+  "createdAt": "2026-11-26T19:31:36Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-BE-013",
+      "ARCH-BE-016",
+      "ARCH-BE-017",
+      "ARCH-BE-018",
+      "ARCH-LOCAL-001",
+      "ARCH-MOD-001",
+      "ARCH-MOD-002",
+      "ARCH-MOD-004",
+      "ARCH-MOD-005",
+      "ARCH-PLAN-001",
+      "ARCH-SRC-002",
+      "ARCH-TELEGRAM-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Приветственная карточка, общие шаблоны оформления, конфигурация ссылки, локальный предпросмотр, TDD и документация."
+    ],
+    "out": [
+      "Деплой, внешние отправки сообщений без отдельной авторизации, изменение календарных правил, БД и HTTP API."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "functional",
+      "statement": "Команда /start отправляет красную приветственную карточку в общем стиле существующих виджетов.",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Приветствие без календаря отправляется как sendWidget и переиспользует общие оформление, гирлянду и подарок."
+        },
+        {
+          "id": "AC-002",
+          "statement": "Карточка содержит согласованные заголовок, описание и встроенную золотую ссылку «Создать календарь»."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "non_functional",
+      "statement": "Статическое приветствие сохраняет безопасность, лимиты Telegram и существующую доставку.",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "Реальный HTML не превышает 32768 байт и 4096 байт после zlib9; не содержит запросов состояния и текстов подарков."
+        },
+        {
+          "id": "AC-004",
+          "statement": "Прежние /start replay, 429, календарные и утренние сценарии проходят без изменения их правил."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Локальная мастерская показывает то же приветствие без фиктивной записи календаря.",
+      "acceptance": [
+        {
+          "id": "AC-005",
+          "statement": "При выбранном профиле в изолированном iframe видна та же карточка; локальная ссылка открывает /app выбранного профиля."
+        },
+        {
+          "id": "AC-006",
+          "statement": "При ширинах 200, 320 и 440 px текст и CTA не обрезаются; активная область CTA не ниже 44 px и свободна от времени Telegram."
+        }
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "type": "constraint",
+      "statement": "Работа следует TDD и FAST_STRICT/2; запуск авторизованного редактора в Telegram подтверждается до окончательной сдачи.",
+      "acceptance": [
+        {
+          "id": "AC-007",
+          "statement": "RED/GREEN и целевая QA записаны, quality и pre-commit пройдены, три независимых оси проверили один снимок."
+        },
+        {
+          "id": "AC-008",
+          "statement": "В клиенте Telegram встроенная ссылка запускает существующий /app с валидным initData; до проверки это внешнее условие остаётся открытым."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Продукт и единое оформление",
+      "objective": "Один статический приветственный виджет использует общий стиль и встроенную ссылку.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Сопоставить запрос пользователя с существующими красными шаблонами, CTA и местом приветствия.",
+          "expected": "Один статический приветственный виджет использует общий стиль и встроенную ссылку."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Архитектура и доставка",
+      "objective": "Рендер приветствия не зависит от календаря; отправка остаётся в шлюзе; БД и API не расширяются.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Проверить WidgetRenderer, NutgramGateway, start/sendOnce и границы хранилища виджетов.",
+          "expected": "Рендер приветствия не зависит от календаря; отправка остаётся в шлюзе; БД и API не расширяются."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "TDD и риски приёмки",
+      "objective": "Есть диагностируемые RED/GREEN на исходящей отправке и мастерской; внешняя проверка Telegram отделена от локальных доказательств.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Проверить публичные границы Pest, команды Make, локальный предпросмотр и ограничения запуска Mini App.",
+          "expected": "Есть диагностируемые RED/GREEN на исходящей отправке и мастерской; внешняя проверка Telegram отделена от локальных доказательств."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-003",
+        "AC-004",
+        "AC-007",
+        "AC-008"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "002",
+      "title": "Приветствие и мастерская через TDD",
+      "objective": "Общее приветствие отправляется нативным виджетом и отображается в локальной мастерской.",
+      "agentRole": "backend_ui",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "README.md",
+        "backend/.env.example",
+        "backend/app/Http/Controllers/DevController.php",
+        "backend/app/Telegram/Infrastructure/NutgramGateway.php",
+        "backend/app/Telegram/Services/WidgetRenderer.php",
+        "backend/config/services.php",
+        "backend/public/studio.css",
+        "backend/resources/views/dev.blade.php",
+        "backend/resources/views/widgets/calendar.blade.php",
+        "backend/resources/views/widgets/garland.blade.php",
+        "backend/resources/views/widgets/style.blade.php",
+        "backend/resources/views/widgets/welcome.blade.php",
+        "backend/tests/Feature/StudioTest.php",
+        "backend/tests/Feature/TelegramWelcomeWidgetTest.php",
+        "backend/tests/Feature/TelegramWidgetTest.php",
+        "docs/backend/telegram.md",
+        "docs/flows/publish-calendar.md"
+      ],
+      "createPaths": [
+        "backend/resources/views/widgets/garland.blade.php",
+        "backend/resources/views/widgets/welcome.blade.php",
+        "backend/tests/Feature/TelegramWelcomeWidgetTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "tdd",
+          "command": "make dev-test-filter filter=TelegramWelcomeWidgetTest",
+          "expected": "RED: вместо ожидаемого sendWidget отправляется sendMessage; GREEN: новое сообщение, ссылка и лимиты проходят."
+        },
+        {
+          "id": "CHECK-005",
+          "kind": "tdd",
+          "command": "make dev-test-filter filter=StudioTest",
+          "expected": "RED: мастерская не показывает приветственную карточку; GREEN: тот же шаблон и локальная CTA доступны."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        },
+        {
+          "id": "tdd",
+          "applyAt": [
+            "red",
+            "green",
+            "verification"
+          ],
+          "purpose": "Проверять новое поведение до реализации через публичные границы.",
+          "expectedOutcome": "RED диагностирует отсутствие поведения, GREEN проходит той же Make-командой."
+        },
+        {
+          "id": "laravel-testing",
+          "applyAt": [
+            "red",
+            "green",
+            "verification"
+          ],
+          "purpose": "Проверить исходящее сообщение и HTML мастерской существующими Pest-сценариями.",
+          "expectedOutcome": "Русские test() проверяют наблюдаемый результат без живой сети."
+        },
+        {
+          "id": "russian-editor",
+          "applyAt": [
+            "design",
+            "green"
+          ],
+          "purpose": "Сохранить согласованный русский текст приветствия и профильной документации.",
+          "expectedOutcome": "Текст краткий, грамотный и соответствует поведению."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006",
+        "AC-007"
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "stage": "004",
+      "title": "Регрессия и визуальная QA",
+      "objective": "Завершённое поведение и непосредственно затронутые карточки проверены локально.",
+      "agentRole": "qa_integration",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-004"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-006",
+          "kind": "inspection",
+          "command": "make test-suite suite=Telegram",
+          "expected": "Все Telegram-сценарии проходят, включая повторы /start, 429, календарь и утренние карточки."
+        },
+        {
+          "id": "CHECK-007",
+          "kind": "inspection",
+          "command": "Проверить в локальной мастерской приветствие на ширинах 200, 320 и 440 px, высоту CTA, отсутствие обрезания, переход в /app и ошибки браузера.",
+          "expected": "Карточка помещается, CTA имеет высоту не менее 44 px и открывает локальный редактор; ошибок браузера нет."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        },
+        {
+          "id": "webapp-testing",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Проверить реальное локальное отображение карточки и переход в редактор.",
+          "expectedOutcome": "При заданных ширинах нет обрезания и ошибок браузера."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-004",
+        "AC-005",
+        "AC-006",
+        "AC-007"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "stage": "007",
+      "title": "Внешняя приёмка запуска Mini App",
+      "objective": "Авторизованный пользователь подтвердил реальное открытие редактора из нового виджета в Telegram.",
+      "agentRole": "release_acceptance",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-004",
+        "TASK-005"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-008",
+          "kind": "inspection",
+          "command": "В клиенте Telegram открыть новый приветственный виджет, нажать «Создать календарь» и подтвердить запуск существующего редактора с Telegram-авторизацией.",
+          "expected": "Главная Mini App направляет на существующий /app; новый виджет открывает авторизованный редактор."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "handoff"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        }
+      ],
+      "requirementIds": [
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-008"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить корректность, безопасность и необходимость строк в замороженном снимке.",
+          "expectedOutcome": "Нет B0/B1; лишние зависимости и дублирование отмечены."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить корректность, безопасность и необходимость строк в замороженном снимке.",
+          "expectedOutcome": "Нет B0/B1; лишние зависимости и дублирование отмечены."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать существующие границы и минимальный полный объём изменения.",
+          "expectedOutcome": "Нет новых хранилищ, зависимостей или дублирования оформления."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить корректность, безопасность и необходимость строк в замороженном снимке.",
+          "expectedOutcome": "Нет B0/B1; лишние зависимости и дублирование отмечены."
+        }
+      ]
+    }
+  ]
+}

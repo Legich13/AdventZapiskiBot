@@ -22,7 +22,7 @@ final readonly class DispatchMorningRemindersAction
         if ($now->lt($cutoff)) {
             return 0;
         }
-        $this->deliveries->reserveEligible($date, $cutoff, $onlyRecipient);
+        $this->deliveries->reserveEligible($date, $now, $onlyRecipient);
         $count = 0;
         foreach ($this->deliveries->dueIds($date, $onlyRecipient) as $id) {
             $reserved = DB::transaction(function () use ($id): bool {

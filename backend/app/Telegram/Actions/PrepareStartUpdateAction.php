@@ -17,6 +17,7 @@ final readonly class PrepareStartUpdateAction
         private PostgresStartUpdateRepository $updates,
         private ClaimCalendarsAction $claim,
         private WidgetRepository $messages,
+        private DispatchMorningRemindersAction $reminders,
     ) {}
 
     /** @return list<int>|null Список на момент получения /start. null означает отклонённый update. */
@@ -32,6 +33,7 @@ final readonly class PrepareStartUpdateAction
             $ids = $this->claim->execute($update->viewerId, $update->username);
             $this->messages->markBotReachable($update->viewerId);
             $this->updates->recordCalendars($update->updateId, $ids);
+            $this->reminders->execute($update->viewerId);
 
             return $ids;
         }, 3);

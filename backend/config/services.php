@@ -4,6 +4,7 @@ return [
     'telegram' => [
         'token' => env('TELEGRAM_BOT_TOKEN'),
         'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
+        'mini_app_url' => env('TELEGRAM_MINI_APP_URL', 'https://t.me/AdventZapiskiBot?startapp'),
     ],
 
     /*

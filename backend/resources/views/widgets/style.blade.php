@@ -34,6 +34,10 @@ button[disabled]{cursor:default;opacity:.65}
 .secondary{color:#ffdaa2;background:transparent;border:0;margin:5px;padding:6px}
 #front p{margin:6px 0 12px}
 .morning h1{margin-bottom:5px}
+#advent.welcome{padding-bottom:calc(18px + var(--tg-content-safe-area-inset-bottom,0px))}
+.welcome p{position:relative;margin:12px 0 18px}
+.welcome .gold{position:relative;display:flex;align-items:center;justify-content:center;min-height:44px;text-decoration:none}
+.welcome .gold:focus-visible{outline:2px solid #ffedca;outline-offset:3px}
 @keyframes lift{0%{transform:none}25%{transform:rotate(-7deg)}40%{transform:rotate(6deg)}to{transform:translate(20px,-35px) rotate(12deg)}}
 @keyframes burst{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media(max-width:275px){#advent{padding:14px 9px}#days{gap:2px}.day{font-size:14px;height:36px}h1{font-size:27px}#letter{font-size:17px}}

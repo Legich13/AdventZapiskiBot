@@ -8,6 +8,7 @@ use App\Calendar\Contracts\CalendarRepository;
 use App\Calendar\DTO\CalendarWriteResultDTO;
 use App\Calendar\Services\CalendarPublicationService;
 use App\Policies\CalendarPolicy;
+use App\Telegram\Actions\DispatchMorningRemindersAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -17,6 +18,7 @@ final readonly class PublishCalendarAction
         private CalendarRepository $repository,
         private CalendarPublicationService $publication,
         private CalendarPolicy $policy,
+        private DispatchMorningRemindersAction $reminders,
     ) {}
 
     public function execute(int $authorId, int $id): CalendarWriteResultDTO
@@ -33,6 +35,9 @@ final readonly class PublishCalendarAction
                 }
                 $this->publication->ensureMonthIsAvailable($calendar, $calendar->recipientUsername);
                 $this->repository->publishDraft($id, $calendar->isSelf ? $authorId : null);
+                if ($calendar->isSelf) {
+                    $this->reminders->execute($authorId);
+                }
             }
 
             return new CalendarWriteResultDTO($id);

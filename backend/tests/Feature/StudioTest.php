@@ -64,6 +64,31 @@ test('локальная мастерская показывает календ�
     get('/dev/widget/'.$card)->assertForbidden();
 });
 
+test('мастерская показывает приветственный виджет выбранному профилю без календарных сообщений', function (): void {
+    app()->detectEnvironment(fn () => 'local');
+    get('/dev')->assertOk()->assertDontSee('Приветствие бота');
+    $viewer = TelegramUser::factory()->create(['id' => 90001]);
+
+    $response = withSession(['telegram_id' => $viewer->id])->get('/dev')->assertOk();
+
+    $response->assertSee('Приветствие бота')->assertSee('Полученных календарей пока нет.');
+    $document = new DOMDocument;
+    $document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+    $html = $xpath->evaluate('string(//iframe[@title="Приветствие бота"]/@srcdoc)');
+    expect($html)->toBeString();
+    assert(is_string($html));
+    $preview = new DOMDocument;
+    $preview->loadHTML('<?xml encoding="UTF-8">'.$html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $card = new DOMXPath($preview);
+
+    expect($card->evaluate('normalize-space(//h1)'))->toBe('Маленькие чудеса каждый день')
+        ->and($card->evaluate('string(//a/@href)'))->toBe(url('/app'))
+        ->and($card->evaluate('string(//a/@target)'))->toBe('_top')
+        ->and($card->evaluate('normalize-space(//a)'))->toBe('Создать календарь')
+        ->and(DB::table('widget_messages')->count())->toBe(0);
+});
+
 test('производственная среда закрывает локальную мастерскую при смене окружения', function () {
     app()->detectEnvironment(fn () => 'production');
     get('/dev')->assertNotFound();

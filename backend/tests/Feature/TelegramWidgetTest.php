@@ -275,7 +275,7 @@ test('Nutgram формирует запросы для нативного вид
     $gateway->welcome(101);
     $gateway->answer('q1', 'записка');
     $sdk->assertReply('sendWidget', ['html' => '<b>✦</b>', 'chat_id' => 101, 'caption' => 'Доброе утро', 'allow_queries' => true], 0)
-        ->assertReply('sendMessage', ['chat_id' => 101, 'reply_markup' => ['inline_keyboard' => [[['web_app' => ['url' => url('/app')]]]]]], 1)
+        ->assertReply('sendWidget', ['chat_id' => 101, 'caption' => '', 'allow_queries' => false], 1)
         ->assertReply('answerWidgetQuery', ['widget_query_id' => 'q1', 'data' => 'записка'], 2);
 });
 
@@ -295,7 +295,7 @@ test('рабочее задание перепланируется через re
 });
 
 test('повтор стартового обновления после подтверждённого отказа продолжает вручение', function () {
-    config(['services.telegram.webhook_secret' => 'winter-test']);
+    config(['services.telegram.webhook_secret' => 'winter-test', 'queue.default' => 'database']);
     widgetCalendar();
     $gateway = mock(NutgramGateway::class);
     $gateway->shouldReceive('welcome')->once()->with(101);

@@ -38,12 +38,12 @@ final class PostgresMorningDeliveryRepository implements MorningDeliveryReposito
     }
 
     /** {@inheritDoc} */
-    public function reserveEligible(string $date, CarbonImmutable $cutoff, ?int $viewerId): void
+    public function reserveEligible(string $date, CarbonImmutable $receivedBy, ?int $viewerId): void
     {
         $candidates = DB::table('gift_days as g')->join('calendars as c', 'c.id', '=', 'g.calendar_id')
             ->join('telegram_users as u', 'u.id', '=', 'c.recipient_id')
             ->where('g.date', $date)->whereNotNull('c.published_at')->whereNull('u.bot_blocked_at')
-            ->where('c.claimed_at', '<=', $cutoff->utc())
+            ->where('c.claimed_at', '<=', $receivedBy->utc())
             ->when($viewerId !== null, fn (Builder $q) => $q->where('u.id', $viewerId))
             ->whereNotExists(fn (Builder $q) => $q->from('morning_deliveries as d')->whereColumn('d.recipient_id', 'u.id')->where('d.gift_date', $date))
             ->select('c.id', 'c.recipient_id', 'g.date')->selectRaw('?::timestamp,?::timestamp,?::timestamp', [now(), now(), now()]);

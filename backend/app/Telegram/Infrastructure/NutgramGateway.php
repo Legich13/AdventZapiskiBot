@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Telegram\Infrastructure;
 
+use App\Telegram\Services\WidgetRenderer;
 use SergiX44\Nutgram\Nutgram;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
-use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
-use SergiX44\Nutgram\Telegram\Types\WebApp\WebAppInfo;
 
 class NutgramGateway
 {
@@ -30,10 +28,8 @@ class NutgramGateway
     public function welcome(int $recipient): void
     {
         if (! $this->simulated()) {
-            $keyboard = InlineKeyboardMarkup::make()->addRow(InlineKeyboardButton::make(
-                'Создать календарь', web_app: WebAppInfo::make(url('/app')),
-            ));
-            app(Nutgram::class)->sendMessage('Соберите маленькие сюрпризы для себя или близкого человека ✨', chat_id: $recipient, reply_markup: $keyboard);
+            $widget = app(WidgetRenderer::class)->renderWelcome(config()->string('services.telegram.mini_app_url'));
+            app(Nutgram::class)->sendWidget(html: $widget->html, chat_id: $recipient, caption: $widget->caption, allow_queries: false);
         }
     }
 
