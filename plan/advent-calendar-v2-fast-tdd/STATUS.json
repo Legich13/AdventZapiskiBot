@@ -1,0 +1,874 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "advent-calendar-v2-fast-tdd",
+  "planRevision": 2,
+  "planSha256": "c545e0d0fc05abb4313c74c32365e43467411e51841ea02d3b44591910fa1165",
+  "orchestratorId": "/root/fast_impl",
+  "overallState": "complete",
+  "currentStage": "007",
+  "supersededBy": null,
+  "updatedAt": "2026-11-26T17:37:44Z",
+  "stages": [
+    {
+      "id": "000",
+      "state": "complete"
+    },
+    {
+      "id": "001",
+      "state": "complete"
+    },
+    {
+      "id": "002",
+      "state": "complete"
+    },
+    {
+      "id": "003",
+      "state": "complete"
+    },
+    {
+      "id": "004",
+      "state": "complete"
+    },
+    {
+      "id": "005",
+      "state": "complete"
+    },
+    {
+      "id": "006",
+      "state": "complete"
+    },
+    {
+      "id": "007",
+      "state": "complete"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "state": "complete",
+      "executorId": "/root/calendar_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-CALENDAR",
+        "EVID-HANDOFF-TASK-001"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-001"
+    },
+    {
+      "id": "TASK-002",
+      "state": "complete",
+      "executorId": "/root/fast_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-BOUNDARIES",
+        "EVID-HANDOFF-TASK-002"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-002"
+    },
+    {
+      "id": "TASK-003",
+      "state": "complete",
+      "executorId": "/root/telegram_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-TRANSPORT",
+        "EVID-HANDOFF-TASK-003"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-003"
+    },
+    {
+      "id": "TASK-004",
+      "state": "complete",
+      "executorId": "/root/fast_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-ARCH",
+        "EVID-HANDOFF-TASK-004",
+        "EVID-QA-ARCH-WIDGETS",
+        "EVID-RED-ARCH"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-004"
+    },
+    {
+      "id": "TASK-005",
+      "state": "complete",
+      "executorId": "/root/calendar_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-CALENDAR",
+        "EVID-GREEN-CALENDAR-CREATED",
+        "EVID-GREEN-CALENDAR-TOKEN",
+        "EVID-HANDOFF-TASK-005",
+        "EVID-QA-CALENDAR",
+        "EVID-RED-CALENDAR",
+        "EVID-RED-CALENDAR-CREATED",
+        "EVID-RED-CALENDAR-TOKEN",
+        "EVID-RED-CALENDAR-TOKEN-MAKE"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-005"
+    },
+    {
+      "id": "TASK-006",
+      "state": "complete",
+      "executorId": "/root/telegram_impl",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-TELEGRAM",
+        "EVID-HANDOFF-TASK-006",
+        "EVID-QA-TELEGRAM",
+        "EVID-RED-TELEGRAM"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-006"
+    },
+    {
+      "id": "TASK-007",
+      "state": "complete",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-STUDIO",
+        "EVID-HANDOFF-TASK-007",
+        "EVID-QA-STUDIO",
+        "EVID-RED-STUDIO"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-007"
+    }
+  ],
+  "activeWriters": [],
+  "evidence": [
+    {
+      "id": "EVID-ANALYSIS-CALENDAR",
+      "stage": "000",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "analysis",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-ANALYSIS-CALENDAR.md",
+      "sha256": "2de295fbde7d29f66ed8a1b02cdefe2f34105697d06500a6b5b847524c3eaa48",
+      "command": "Проверить правила автора, получателя и неизменность сценариев после выделения DTO.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-BOUNDARIES",
+      "stage": "000",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "analysis",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-ANALYSIS-BOUNDARIES.md",
+      "sha256": "e89bec366cea820eef17e7660a799c62b8456eda58bc619df4955ca56c4b1c51",
+      "command": "Сопоставить файлы, PHPDoc, границы слоёв и требования документации с Jobgram.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-TRANSPORT",
+      "stage": "000",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "analysis",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-ANALYSIS-TRANSPORT.md",
+      "sha256": "79691de206b4d5a15fda650a6bbd57d921486fe3ed3872b6b584313c74e3deab",
+      "command": "Проверить риск изменения повторов Telegram, выдачи чужого сообщения и байтовых лимитов.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-BASELINE",
+      "stage": "001",
+      "taskId": null,
+      "checkId": null,
+      "kind": "baseline",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/baseline.sha256",
+      "sha256": "a43e2a4a7b51aa633a2e4d46b40b74706980119de2380efca07b9991bcd46d8f",
+      "command": "Сопоставить SHA-256 полного дерева, снятые до архитектурной реорганизации, с планируемыми путями.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-ARCH",
+      "stage": "002",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-ARCH.md",
+      "sha256": "1f2c9cd0bf063ba78f1a76634e84081bef7c2ecf75f12cb44df485397cc0924d",
+      "command": "make test-suite suite=AdventArchitectureTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-CALENDAR",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-CALENDAR.md",
+      "sha256": "0151e57b73bc2dc8d65b764ab7601a39323cfb060c5643e0ef266d84c9edbc07",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-TELEGRAM",
+      "stage": "002",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-TELEGRAM.md",
+      "sha256": "5be7417a06ad2691e890bf4cf7e94590e31e57a68d287a8948ea63759fa389ad",
+      "command": "make test-suite suite=Telegram",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-STUDIO",
+      "stage": "002",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-STUDIO.md",
+      "sha256": "d87ffb0a16d7062ac65002d76ae444041c57791a15493b05b8aab6ac75c060a7",
+      "command": "make test-suite suite='StudioBoundaryTest|DocumentationAccessTest'",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:10:54Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-CALENDAR",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-CALENDAR.md",
+      "sha256": "f3631e78d9cbc55381f3f8500b203c446b044bb9247167c2bfc4582acb266fdc",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:12:35Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-TELEGRAM",
+      "stage": "003",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-TELEGRAM.md",
+      "sha256": "48642ea1de3df8e99be4e40c7ab53f32849a6ba85e39295d9c03d92c0dd23ebb",
+      "command": "make test-suite suite=Telegram",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:12:35Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-ARCH",
+      "stage": "003",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-ARCH.md",
+      "sha256": "5ec1c1aa07a75cb2a890c23c620666aa4a04f8bbb8f0bba75855f391cc306e3b",
+      "command": "make test-suite suite=AdventArchitectureTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:13:30Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-STUDIO",
+      "stage": "003",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-STUDIO.md",
+      "sha256": "ed4a623886e9f3c4f4d9ef8f6bdcb57e236896864027c93202c45795e1ac056c",
+      "command": "make test-suite suite='StudioBoundaryTest|DocumentationAccessTest'",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:14:05Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-CALENDAR-CREATED",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-CALENDAR-CREATED.md",
+      "sha256": "0e2b0ea8f0e2eea2fb11b4f69a082d11cb1ee1beb67a3fa99f2780d0e1e03e2d",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:14:59Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-CALENDAR-CREATED",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-CALENDAR-CREATED.md",
+      "sha256": "9bd1f64909de9333ccc9310e3bc83be3aec941252d11f4b93c181d8c84489135",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:14:59Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-CALENDAR-TOKEN",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-CALENDAR-TOKEN.md",
+      "sha256": "45e0db78aef187a4abf94e4e46d9b3d4af45d297ed45f639e66f18cd9933badb",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 1,
+      "observedAt": "2026-11-26T17:15:34Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-CALENDAR-TOKEN",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GREEN-CALENDAR-TOKEN.md",
+      "sha256": "a30868ed552f5f9f3a9a7a398a8c1ee1a61a5e55f8cb1a4f92fd8ad3b43f5e62",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:15:34Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-CALENDAR-TOKEN-MAKE",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-RED-CALENDAR-TOKEN-MAKE.md",
+      "sha256": "5527c1641465ecf7838f8a38f2a1e5f979798b48d7bbfce0814ef6641a92bc74",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:15:45Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-ARCH-WIDGETS",
+      "stage": "004",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "qa",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-QA-ARCH-WIDGETS.md",
+      "sha256": "0846f1d2eb1ed161289f7b0e84dcac94dc7b75ddc1d6ec789cd161fd7df98315",
+      "command": "make test-suite suite=AdventArchitectureTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:18:17Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-CALENDAR",
+      "stage": "004",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "qa",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-QA-CALENDAR.md",
+      "sha256": "e6a3e7946d9743d5b099cbacae0721fee11fe1a98f876cf6cf7d04eedc681c5c",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:22:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-TELEGRAM",
+      "stage": "004",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "qa",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-QA-TELEGRAM.md",
+      "sha256": "4317c313c66c90f08631d125a53462c166e0329bb7a89a99d24149113a6459c4",
+      "command": "make test-suite suite=Telegram",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:22:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-STUDIO",
+      "stage": "004",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "qa",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-QA-STUDIO.md",
+      "sha256": "5787bc892bb5a951bbc42948fa3453b3442a405df1f84780e2e4ef3e6a5fd9c1",
+      "command": "make test-suite suite='StudioBoundaryTest|DocumentationAccessTest'",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:22:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-001",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-001.md",
+      "sha256": "f9107496701dbe69ce268e457bf145f6b46e8d982dda5f41553858c2d0af570e",
+      "command": "make quality",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:23:08Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "551d479678289dad3f9162c91714659d67645b110a75c7b571c41167545b9eb4"
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-002",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-002.md",
+      "sha256": "82caef83690c4cf32dce434adccbf92eacfc94239ec6d83c600fdc9d79812bf3",
+      "command": "make quality",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:24:00Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "ed12f5b4dc78c37dc148360745b393b6aa37ddb5a34dc0cf60b606450908b23e"
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-003",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-003.md",
+      "sha256": "7bd6020f7dd3712d82411b028c78be0b4b8ce6bbbf6beca384878936d2c38ac1",
+      "command": "make quality",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:24:52Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "6a88fb1a81919c2054ae2f1791f85f9bdbd51b5e2161327c44ec105fd25b06b0"
+    },
+    {
+      "id": "EVID-GATE-PRECOMMIT-ATTEMPT-001",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-001.md",
+      "sha256": "ca63c5d91c3a4635a78c0d30a0d6a55427c4617ed8608776b69481053c6c6213",
+      "command": "make pre-commit",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:24:52Z",
+      "gateId": "GATE-PRECOMMIT",
+      "verifiedManifestSha256": "6a88fb1a81919c2054ae2f1791f85f9bdbd51b5e2161327c44ec105fd25b06b0"
+    },
+    {
+      "id": "EVID-SNAPSHOT-ROUND-1",
+      "stage": "006",
+      "taskId": null,
+      "checkId": null,
+      "kind": "snapshot",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-SNAPSHOT-ROUND-1.md",
+      "sha256": "d2ee3eea7530baf2b72e2b5c8e90ade5b53a099405cb10e52bf9529b8c281128",
+      "command": "Сверить manifest, доказательства, документацию и SHA-256 дерева перед независимыми ревью.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:24:52Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REVIEW-LEDGER-1",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REVIEW-LEDGER-1.md",
+      "sha256": "4a36ce86d36372053e834f03b97a463b3913277b4ed2e2ea4bca96b616f75a42",
+      "command": "Сохранить полный набор независимых вердиктов перед исправлениями.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:27:22Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-ARCHIVE-SNAPSHOT-1",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-ARCHIVE-SNAPSHOT-1.md",
+      "sha256": "ccdc56fd8bd48bd6fa8488ae4d4aed2306139e011ec75394424f5bcfd4d9d83c",
+      "command": "Сохранить снимок первого раунда при повторном открытии этапа 005.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:27:52Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-ARCHIVE-SNAPSHOT-BYTES-1",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-ARCHIVE-SNAPSHOT-BYTES-1.md",
+      "sha256": "e9b2610d7cb717f545656e781fb0326bcd9bfd71e6c7f5d0d34b35445d21a5c5",
+      "command": "Архивировать неизменные байты evidence 006 в допущенном протоколом журнале 005.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:28:12Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REMEDIATION-R1-START",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REMEDIATION-R1-START.md",
+      "sha256": "cec6b487ff7c910124c224286adab8fbd5ef7c138f370d1661d55708a2a4a98a",
+      "command": "make test-suite suite='Calendar^|TelegramStartReplayTest'",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:33:03Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REMEDIATION-R1-REMINDERS",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REMEDIATION-R1-REMINDERS.md",
+      "sha256": "a5912b4c23395391a8a3bc7053e47589106d8ea57d9e5db91e4ddf18ea7219b3",
+      "command": "make test-suite suite=TelegramWidgetTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:33:03Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REMEDIATION-R1-DOCS",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REMEDIATION-R1-DOCS.md",
+      "sha256": "68c9007a488a89a07d9519890cbd3f1185b24efeb67c98e236ead5a58d68e7a4",
+      "command": "make test-suite suite='DocumentationAccessTest.*документация'",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:33:03Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REMEDIATION-R1-WIDGET",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REMEDIATION-R1-WIDGET.md",
+      "sha256": "0a1494feddddbab2a3fe73a74c10fbee3da21dd882d98407f3d2422bae4c141b",
+      "command": "make test-suite suite=WidgetInteractionTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:33:03Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REMEDIATION-FILES-R1",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-REMEDIATION-FILES-R1.md",
+      "sha256": "c788b5cad256bced79c14e28413bf0bf8aa918df154e46225d32f08e95bb855f",
+      "command": "Сверить все исходники приложения и дополнительные пути, названные в ходе исправлений.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:33:28Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-004",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-004.md",
+      "sha256": "a6c757087dad7eb8439a529cdcceea32e1db20a425e5d772dcdabfc7dcc7abee",
+      "command": "make quality",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:33:48Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "eed74774cb7fb38d8d9599641ae8180f74d09f42a3ade72119166117fd010573"
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-005",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-005.md",
+      "sha256": "31623c215c6ec1b9c9fd3b9a19308a236a2140bf1445e28e0cc50f7f92351103",
+      "command": "make quality",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:35:07Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "eed74774cb7fb38d8d9599641ae8180f74d09f42a3ade72119166117fd010573"
+    },
+    {
+      "id": "EVID-GATE-PRECOMMIT-ATTEMPT-002",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-002.md",
+      "sha256": "8b9b0ed42cf847e58c7e1687cf503e9ab3ae5e3208aee1db9407db8915c7b00d",
+      "command": "make pre-commit",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:35:07Z",
+      "gateId": "GATE-PRECOMMIT",
+      "verifiedManifestSha256": "eed74774cb7fb38d8d9599641ae8180f74d09f42a3ade72119166117fd010573"
+    },
+    {
+      "id": "EVID-SNAPSHOT-ROUND-2",
+      "stage": "006",
+      "taskId": null,
+      "checkId": null,
+      "kind": "snapshot",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-SNAPSHOT-ROUND-2.md",
+      "sha256": "886ca7b67f2d21c8436817bec66a06f802afa07d380b9b4c529251f261ec26fa",
+      "command": "Сверить manifest, доказательства, документацию и SHA-256 дерева перед независимыми ревью.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:35:07Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-001",
+      "stage": "007",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-001.md",
+      "sha256": "6a7bef34b0ead2001a12bf1550049dc3ef7fad7164626ed530bad789d5bca1ea",
+      "command": "Проверить правила автора, получателя и неизменность сценариев после выделения DTO.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-002",
+      "stage": "007",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-002.md",
+      "sha256": "21cfa6ef3cc3a303239fbaf78bc56140792a4402602e623c2a892f85563bebde",
+      "command": "Сопоставить файлы, PHPDoc, границы слоёв и требования документации с Jobgram.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-003",
+      "stage": "007",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-003.md",
+      "sha256": "76b4b1771659e09f1797b8b130d4cab95929c5eb32bbde23bcd356ee24d2261d",
+      "command": "Проверить риск изменения повторов Telegram, выдачи чужого сообщения и байтовых лимитов.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-004",
+      "stage": "007",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-004.md",
+      "sha256": "d8f2cab852551da9f7398a99b7a05f5a0fc6fabe27f0a4389c78ae58e92d0ec9",
+      "command": "make test-suite suite=AdventArchitectureTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-005",
+      "stage": "007",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-005.md",
+      "sha256": "5ece3aa2f7f874b7db97369fdd67221e019c9ca0c6d081d4207452a176dc0241",
+      "command": "make test-suite suite=Calendar",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-006",
+      "stage": "007",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-006.md",
+      "sha256": "62b7c7148970294a0e581d90ababbf55bf831cfe5f566c56f1b1aab060ee54b8",
+      "command": "make test-suite suite=Telegram",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-007",
+      "stage": "007",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "handoff",
+      "path": "plan/advent-calendar-v2-fast-tdd/evidence/EVID-HANDOFF-TASK-007.md",
+      "sha256": "81f3789cf54a6de1bd5b75dd9ffdd7a98418a6706a847a50224ca2d187dae3b6",
+      "command": "make test-suite suite='StudioBoundaryTest|DocumentationAccessTest'",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:37:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    }
+  ],
+  "gateResults": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "state": "passed",
+      "evidenceId": "EVID-GATE-PRECOMMIT-ATTEMPT-002"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "state": "passed",
+      "evidenceId": "EVID-GATE-QUALITY-ATTEMPT-005"
+    }
+  ],
+  "snapshot": {
+    "state": "frozen",
+    "round": 2,
+    "manifestPath": "plan/advent-calendar-v2-fast-tdd/evidence/final.sha256",
+    "manifestSha256": "eed74774cb7fb38d8d9599641ae8180f74d09f42a3ade72119166117fd010573",
+    "bundleSha256": "e6f5d8635eaa1cd44c7e3ed1bbd291b87efb9922bf4566d50ce0691a56d10964"
+  },
+  "reviews": [
+    {
+      "axisId": "REV-SECURITY-PRIVACY-DATA",
+      "reviewerId": "/root/review_security",
+      "verdict": "go",
+      "round": 2,
+      "snapshotSha256": "e6f5d8635eaa1cd44c7e3ed1bbd291b87efb9922bf4566d50ce0691a56d10964",
+      "evidencePath": "plan/advent-calendar-v2-fast-tdd/reviews/round-2-security-privacy-data.md",
+      "evidenceSha256": "15a309ed6e8e04c88633f19336e07eb25994b804530a1618d511a3f69da004d6",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-ARCHITECTURE-API-PONYTAIL",
+      "reviewerId": "/root/review_arch",
+      "verdict": "go",
+      "round": 2,
+      "snapshotSha256": "e6f5d8635eaa1cd44c7e3ed1bbd291b87efb9922bf4566d50ce0691a56d10964",
+      "evidencePath": "plan/advent-calendar-v2-fast-tdd/reviews/round-2-architecture-api-ponytail.md",
+      "evidenceSha256": "34fa167e61db7fca305b00b602ae5f9c15418b9394f443cfd09b4833420910b4",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-SPEC-TDD-UX-A11Y",
+      "reviewerId": "/root/review_spec",
+      "verdict": "go",
+      "round": 2,
+      "snapshotSha256": "e6f5d8635eaa1cd44c7e3ed1bbd291b87efb9922bf4566d50ce0691a56d10964",
+      "evidencePath": "plan/advent-calendar-v2-fast-tdd/reviews/round-2-spec-tdd-ux-a11y.md",
+      "evidenceSha256": "a13740da017eed952ecef44cd772d3b6d04b8c9356c039efa8dc6ef6f8db2fa1",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    }
+  ],
+  "blockers": []
+}

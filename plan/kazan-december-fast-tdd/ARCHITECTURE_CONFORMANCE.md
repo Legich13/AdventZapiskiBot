@@ -1,0 +1,17 @@
+# Architecture Conformance
+
+78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6
+
+ARCH-ACCESS-001
+
+ARCH-BE-007
+
+ARCH-BE-011
+
+ARCH-CALENDAR-001
+
+ARCH-CALENDAR-002
+
+ARCH-PLAN-001
+
+Deviations: none

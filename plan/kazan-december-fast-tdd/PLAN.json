@@ -1,0 +1,408 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "kazan-december-fast-tdd",
+  "slug": "kazan-december",
+  "revision": 1,
+  "supersedes": null,
+  "title": "Персональный декабрьский календарь",
+  "goal": "Миграция публикует 31 записку, а личный /start вручает их владельцу заданного ID.",
+  "createdAt": "2026-11-26T17:51:29Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-BE-007",
+      "ARCH-BE-011",
+      "ARCH-CALENDAR-001",
+      "ARCH-CALENDAR-002",
+      "ARCH-PLAN-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Установочные данные production, вручение по ID, защита адресата в редакторе."
+    ],
+    "out": [
+      "Деплой на внешний сервер, отправка сообщений из миграции."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "functional",
+      "statement": "Миграция создаёт 31 записку однократно и атомарно только в production.",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Миграция создаёт 31 записку однократно и атомарно только в production."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "statement": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки.",
+      "acceptance": [
+        {
+          "id": "AC-002",
+          "statement": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Редактор фиксирует адресата до вручения и позволяет исправить будущую записку.",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "Редактор фиксирует адресата до вручения и позволяет исправить будущую записку."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Состав декабрьской подборки",
+      "objective": "Миграция создаёт 31 записку однократно и атомарно только в production.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Сопоставить дни переписки и афиши организаторов.",
+          "expected": "Миграция создаёт 31 записку однократно и атомарно только в production."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Определить изменения в рамках существующих модулей.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "acceptanceIds": [
+        "AC-001"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Модель вручения",
+      "objective": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Проверить поля Calendar, обработчик /start и выборку для рассылки.",
+          "expected": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Определить изменения в рамках существующих модулей.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "acceptanceIds": [
+        "AC-002"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "Повторы и конфликты",
+      "objective": "Миграция создаёт 31 записку однократно и атомарно только в production.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Проверить уникальность календаря и сохранность профилей в PostgreSQL.",
+          "expected": "Миграция создаёт 31 записку однократно и атомарно только в production."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Определить изменения в рамках существующих модулей.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "acceptanceIds": [
+        "AC-001"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "002",
+      "title": "Публикация и 31 записка",
+      "objective": "Миграция создаёт 31 записку однократно и атомарно только в production.",
+      "agentRole": "migration",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "backend/database/data/kazan_december_2026.php",
+        "backend/database/migrations/2026_11_26_000001_publish_kazan_december_calendar.php",
+        "backend/tests/Feature/KazanDataMigrationTest.php"
+      ],
+      "createPaths": [
+        "backend/database/data/kazan_december_2026.php",
+        "backend/database/migrations/2026_11_26_000001_publish_kazan_december_calendar.php",
+        "backend/tests/Feature/KazanDataMigrationTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "tdd",
+          "command": "make test-suite suite=KazanDataMigration",
+          "expected": "Миграция создаёт 31 записку однократно и атомарно только в production."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Проверить результат через обычную точку входа.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "acceptanceIds": [
+        "AC-001"
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "stage": "002",
+      "title": "Вручение и права редактирования",
+      "objective": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки.",
+      "agentRole": "runtime",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "backend/app/Calendar/Actions/ClaimCalendarsAction.php",
+        "backend/app/Calendar/Actions/SaveCalendarAction.php",
+        "backend/app/Calendar/Contracts/CalendarRepository.php",
+        "backend/app/Calendar/Infrastructure/Persistence/PostgresCalendarRepository.php",
+        "backend/app/Models/Calendar.php",
+        "backend/tests/Feature/TelegramReservedCalendarTest.php"
+      ],
+      "createPaths": [
+        "backend/tests/Feature/TelegramReservedCalendarTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-005",
+          "kind": "tdd",
+          "command": "make test-suite suite=TelegramReservedCalendarTest",
+          "expected": "Первый /start адресата вручает подарок по ID, открывает доступ и допускает утренние карточки."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Проверить результат через обычную точку входа.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002"
+      ],
+      "acceptanceIds": [
+        "AC-002"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "stage": "002",
+      "title": "Поле получателя и справочник",
+      "objective": "Редактор фиксирует адресата до вручения и позволяет исправить будущую записку.",
+      "agentRole": "editor",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "README.md",
+        "backend/resources/views/app.blade.php",
+        "backend/tests/Feature/StudioTest.php",
+        "docs/backend/calendar.md",
+        "docs/flows/publish-calendar.md"
+      ],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-006",
+          "kind": "tdd",
+          "command": "make test-suite suite=StudioTest",
+          "expected": "Редактор фиксирует адресата до вручения и позволяет исправить будущую записку."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Проверить результат через обычную точку входа.",
+          "expectedOutcome": "Изменение использует существующую схему данных и интерфейс."
+        }
+      ],
+      "requirementIds": [
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-003"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    }
+  ]
+}

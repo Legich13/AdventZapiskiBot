@@ -1,0 +1,43 @@
+name: advent-calendar
+x-app: &application
+  build: ./backend
+  image: advent-calendar-php:dev
+  working_dir: /workspace/backend
+  volumes:
+    - .:/workspace
+  environment:
+    DB_HOST: db
+    DB_PORT: 5432
+  depends_on:
+    db:
+      condition: service_healthy
+services:
+  db:
+    image: postgres:18-alpine@sha256:10a5c69a83035ab5239f5620d708520e8b28f5aa1f2b20143e6024532edadfb5
+    environment:
+      POSTGRES_DB: advent
+      POSTGRES_USER: advent
+      POSTGRES_PASSWORD: local-advent
+    volumes:
+      - pg18-data:/var/lib/postgresql
+      - ./infra/test-databases.sql:/docker-entrypoint-initdb.d/test-databases.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U advent -d advent"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  app:
+    <<: *application
+    command: php artisan serve --no-reload --host=0.0.0.0 --port=8000
+    ports:
+      - "127.0.0.1:${ADVENT_PORT:-8087}:8000"
+  worker:
+    <<: *application
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=1 --timeout=60 --tries=3
+  scheduler:
+    <<: *application
+    restart: unless-stopped
+    command: php artisan schedule:work
+volumes:
+  pg18-data:

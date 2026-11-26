@@ -1,0 +1,31 @@
+# Command Log
+
+| UTC | Evidence | Command | Exit | File | SHA-256 |
+|---|---|---|---|---|---|
+| 2026-11-26T17:51:29Z | EVID-ANALYSIS-001 | `Сопоставить дни переписки и афиши организаторов.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-001.md | af0f3a06b0c094afde675edfa33a85ce6988ef196823179d7e792d61e57e4781 |
+| 2026-11-26T17:51:29Z | EVID-ANALYSIS-002 | `Проверить поля Calendar, обработчик /start и выборку для рассылки.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-002.md | cf017be607b6e145a3003c3788d629c8fe9138d442cc37e3d634fa396895c585 |
+| 2026-11-26T17:51:29Z | EVID-ANALYSIS-003 | `Проверить уникальность календаря и сохранность профилей в PostgreSQL.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-003.md | 2a90ffa6bf6c4fef38dc78d4ff34144d406e07195c6ceb0830abb7d31e6cd7d9 |
+| 2026-11-26T17:51:29Z | EVID-BASELINE | `Сопоставить исходные контрольные суммы с путями задач.` | 0 | plan/kazan-december-fast-tdd/evidence/baseline.sha256 | 89e468834c8cfca2fc5ca6c85bee90e5ea98ed9cfb0d1644feb8c4e223b19507 |
+| 2026-11-26T17:51:29Z | EVID-RED-004 | `make test-suite suite=KazanDataMigration` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-RED-004.md | 448567b1bebb5381db9e18065520c2dbe7029bb90df0f08db7446e2a3c89f63f |
+| 2026-11-26T17:51:29Z | EVID-RED-005 | `make test-suite suite=TelegramReservedCalendarTest` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-RED-005.md | bc078b763dc77f9fef7f26e57323eb8159d87a1cb646b985174b4738a5c19998 |
+| 2026-11-26T17:51:29Z | EVID-RED-006 | `make test-suite suite=StudioTest` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-RED-006.md | af5216f1542e3a64c1117e705faea9d80a09b3864d2db20253cddd6ce758752b |
+| 2026-11-26T17:52:47Z | EVID-GREEN-6-8 | `make test-suite suite=StudioTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GREEN-6-8.md | fa8d0800c383a382602a68058a69d37fdc33fe793f35221bb781df646fa6604c |
+| 2026-11-26T17:52:47Z | EVID-GREEN-5-9 | `make test-suite suite=TelegramReservedCalendarTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GREEN-5-9.md | 84e073e87973ee7e6d51a64a33d8f1216e7f8e9e122e14985ec6f3672347c588 |
+| 2026-11-26T17:52:47Z | EVID-GREEN-4-10 | `make test-suite suite=KazanDataMigration` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GREEN-4-10.md | 4f86577fe45ea45e1b6f8380571d00bcadba7c55b1dbcb25430c5b1471ebad1f |
+| 2026-11-26T17:52:47Z | EVID-RED-5-11 | `make test-suite suite=TelegramReservedCalendarTest` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-RED-5-11.md | fdd47c6857461ac7f911341b158694ef92198b4fe6ced3105519e54b3db8b1ad |
+| 2026-11-26T17:52:47Z | EVID-GREEN-5-12 | `make test-suite suite=TelegramReservedCalendarTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GREEN-5-12.md | 304bacf260fe7f229c5e2c8f583dfcb84a35bcd03ce1f3dc8dafddb63a0a4827 |
+| 2026-11-26T17:54:32Z | EVID-QA-6-13 | `make test-suite suite=StudioTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-QA-6-13.md | fe5ee98a9a2653cc3e93936522b5bd51785185e074e34b108cc2cbd530f153b2 |
+| 2026-11-26T17:54:32Z | EVID-QA-5-14 | `make test-suite suite=TelegramReservedCalendarTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-QA-5-14.md | 3544c93c91b15b2f8138f4f0db08f754a5a79fe276f32e682936d4d9b1e244c5 |
+| 2026-11-26T17:54:32Z | EVID-QA-4-15 | `make test-suite suite=KazanDataMigration` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-QA-4-15.md | 629741ff33e5802141c06bfbd4f79c4474b8fae45050ec06fade80bc87300334 |
+| 2026-11-26T17:53:38Z | EVID-RED-4-16 | `make test-suite suite=KazanDataMigration` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-RED-4-16.md | b6b467873ba09ff872f3a4e136a1d7ea1d9c5e13738d02c6013d93a668508199 |
+| 2026-11-26T17:53:38Z | EVID-GREEN-4-17 | `make test-suite suite=KazanDataMigration` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GREEN-4-17.md | de76b2164541c0f25543019f6a6be9cf3743d7c3a3b856c0579c3bcc4423fcbe |
+| 2026-11-26T17:54:02Z | EVID-GATE-QUALITY-ATTEMPT-001 | `make quality` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-001.md | b9cdff44ff9c21c58eebed0416d2c0971cb8a8d7a4ccfb8d3d8075ec9e8930e8 |
+| 2026-11-26T17:54:32Z | EVID-GATE-PRECOMMIT-ATTEMPT-001 | `make pre-commit` | 2 | plan/kazan-december-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-001.md | e4506b3b778c6cbb5e496c5c85a71a80c7581ce3d26bdafcc924590690f5bcbc |
+| 2026-11-26T17:54:44Z | EVID-GATE-PRECOMMIT-ATTEMPT-002 | `make pre-commit` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-002.md | 4ddd0e909491f6e8483ab8a4a434f7e0a7a40d64bc498dcd8bb464ada44e3d5c |
+| 2026-11-26T17:54:44Z | EVID-SNAPSHOT-ROUND-1 | `Зафиксировать манифест файлов и хеш комплекта доказательств.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-SNAPSHOT-ROUND-1.md | acf99b65ff761a7632f55d9df1ebbdf6b7490d596ad601742aa4d7c69bc85387 |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-001 | `Сопоставить дни переписки и афиши организаторов.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-001.md | 118aa63336491a8a6354f9fe6771c5eaab81d1368f5b7e51f90c39de51188bd1 |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-002 | `Проверить поля Calendar, обработчик /start и выборку для рассылки.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-002.md | 0df3a514691165a7127e30080c2c19a593c912ab1933a87f01ed7194c7c22d5a |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-003 | `Проверить уникальность календаря и сохранность профилей в PostgreSQL.` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-003.md | 94e9f9a06512bfc27d548c5a52448291cc4285212e07241b878caaa07adb05f1 |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-004 | `make test-suite suite=KazanDataMigration` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-004.md | 1c291064b6f0c4ef01f179d4e6e82eea7ae6b4c8e9c46838263189a827e93566 |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-005 | `make test-suite suite=TelegramReservedCalendarTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-005.md | 5a6a61f5845855f747606454f998bdc2e74a69399dadb9f972dc1d68eb025e7c |
+| 2026-11-26T17:55:36Z | EVID-HANDOFF-TASK-006 | `make test-suite suite=StudioTest` | 0 | plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-006.md | 3f4593d93ca9b5e51b51813540684f78dac28d0711bcd0c428d1eea7047005fa |

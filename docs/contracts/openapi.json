@@ -1,0 +1,547 @@
+{
+    "openapi": "3.1.2",
+    "info": {
+        "title": "\u0414\u0435\u043a\u0430\u0431\u0440\u044c \u0447\u0443\u0434\u0435\u0441 \u00b7 API",
+        "version": "1.0.0",
+        "description": "\u0410\u0432\u0442\u043e\u0440\u0438\u0437\u0430\u0446\u0438\u044f Mini App, \u043f\u0443\u0431\u043b\u0438\u043a\u0430\u0446\u0438\u044f \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044f \u0438 \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0441\u043e\u0431\u044b\u0442\u0438\u0439 Telegram."
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "paths": {
+        "/app/calendars": {
+            "post": {
+                "operationId": "saveCalendarDraft",
+                "summary": "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u043d\u043e\u0432\u044b\u0439 \u0447\u0435\u0440\u043d\u043e\u0432\u0438\u043a",
+                "tags": [
+                    "Calendar"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveCalendarRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`CalendarIdResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CalendarIdResource"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\u041b\u0438\u043c\u0438\u0442 \u0447\u0430\u0441\u0442\u043e\u0442\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432 \u0438\u0441\u0447\u0435\u0440\u043f\u0430\u043d."
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    }
+                },
+                "security": [
+                    {
+                        "editorSession": [],
+                        "csrf": []
+                    }
+                ]
+            }
+        },
+        "/app/calendars/{calendar}": {
+            "put": {
+                "operationId": "updateCalendar",
+                "summary": "\u0421\u043e\u0445\u0440\u0430\u043d\u0438\u0442\u044c \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044f",
+                "tags": [
+                    "Calendar"
+                ],
+                "parameters": [
+                    {
+                        "name": "calendar",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SaveCalendarRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`CalendarIdResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CalendarIdResource"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\u041b\u0438\u043c\u0438\u0442 \u0447\u0430\u0441\u0442\u043e\u0442\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432 \u0438\u0441\u0447\u0435\u0440\u043f\u0430\u043d."
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    },
+                    "409": {
+                        "description": "\u041c\u0435\u0441\u044f\u0446 \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044f \u0443\u0436\u0435 \u0437\u0430\u043d\u044f\u0442."
+                    }
+                },
+                "security": [
+                    {
+                        "editorSession": [],
+                        "csrf": []
+                    }
+                ]
+            }
+        },
+        "/app/calendars/{calendar}/publish": {
+            "post": {
+                "operationId": "publishCalendar",
+                "summary": "\u041e\u043f\u0443\u0431\u043b\u0438\u043a\u043e\u0432\u0430\u0442\u044c \u043f\u043e\u0434\u0433\u043e\u0442\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0439 \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044c",
+                "tags": [
+                    "Calendar"
+                ],
+                "parameters": [
+                    {
+                        "name": "calendar",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`CalendarIdResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CalendarIdResource"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\u041b\u0438\u043c\u0438\u0442 \u0447\u0430\u0441\u0442\u043e\u0442\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432 \u0438\u0441\u0447\u0435\u0440\u043f\u0430\u043d."
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "$ref": "#/components/responses/AuthorizationException"
+                    },
+                    "401": {
+                        "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    },
+                    "409": {
+                        "description": "\u041c\u0435\u0441\u044f\u0446 \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044f \u0443\u0436\u0435 \u0437\u0430\u043d\u044f\u0442."
+                    }
+                },
+                "security": [
+                    {
+                        "editorSession": [],
+                        "csrf": []
+                    }
+                ]
+            }
+        },
+        "/app/session": {
+            "post": {
+                "operationId": "miniAppSession",
+                "summary": "\u0412\u043e\u0439\u0442\u0438 \u0432 \u0440\u0435\u0434\u0430\u043a\u0442\u043e\u0440 \u0447\u0435\u0440\u0435\u0437 Telegram",
+                "tags": [
+                    "MiniAppSession"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MiniAppLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "429": {
+                        "description": "\u041b\u0438\u043c\u0438\u0442 \u0447\u0430\u0441\u0442\u043e\u0442\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432 \u0438\u0441\u0447\u0435\u0440\u043f\u0430\u043d."
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    }
+                },
+                "security": [
+                    {
+                        "csrf": []
+                    }
+                ]
+            }
+        },
+        "/telegram/webhook": {
+            "post": {
+                "operationId": "receiveTelegramUpdate",
+                "summary": "\u041e\u0431\u0440\u0430\u0431\u043e\u0442\u0430\u0442\u044c \u0441\u043e\u0431\u044b\u0442\u0438\u0435 \u0431\u043e\u0442\u0430",
+                "tags": [
+                    "TelegramWebhook"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TelegramWebhookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "503": {
+                        "description": "",
+                        "headers": {
+                            "Retry-After": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "403": {
+                        "description": "\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0441\u0435\u043a\u0440\u0435\u0442 webhook."
+                    }
+                },
+                "security": [
+                    {
+                        "telegramWebhook": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "editorSession": {
+                "type": "apiKey",
+                "in": "cookie",
+                "name": "dekabr-cudes-session"
+            },
+            "csrf": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-CSRF-TOKEN"
+            },
+            "telegramWebhook": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Telegram-Bot-Api-Secret-Token"
+            }
+        },
+        "schemas": {
+            "CalendarIdResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id"
+                ],
+                "title": "CalendarIdResource"
+            },
+            "MiniAppLoginRequest": {
+                "type": "object",
+                "properties": {
+                    "initData": {
+                        "type": "string",
+                        "maxLength": 16384
+                    }
+                },
+                "required": [
+                    "initData"
+                ],
+                "title": "MiniAppLoginRequest"
+            },
+            "SaveCalendarRequest": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "month": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]{3}-"
+                            },
+                            "target": {
+                                "type": "string",
+                                "const": "self"
+                            },
+                            "days": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "date": {
+                                            "type": "string",
+                                            "format": "date"
+                                        },
+                                        "text": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "maxLength": 1024
+                                        }
+                                    },
+                                    "required": [
+                                        "date",
+                                        "text"
+                                    ]
+                                },
+                                "maxItems": 31,
+                                "uniqueItems": true
+                            }
+                        },
+                        "required": [
+                            "month",
+                            "target",
+                            "days"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "month": {
+                                "type": "string",
+                                "pattern": "^[1-9][0-9]{3}-"
+                            },
+                            "target": {
+                                "type": "string",
+                                "const": "username"
+                            },
+                            "username": {
+                                "type": "string",
+                                "pattern": "^@?[a-zA-Z][a-zA-Z0-9_]{0,31}$"
+                            },
+                            "days": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "date": {
+                                            "type": "string",
+                                            "format": "date"
+                                        },
+                                        "text": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ],
+                                            "maxLength": 1024
+                                        }
+                                    },
+                                    "required": [
+                                        "date",
+                                        "text"
+                                    ]
+                                },
+                                "maxItems": 31,
+                                "uniqueItems": true
+                            }
+                        },
+                        "required": [
+                            "month",
+                            "target",
+                            "username",
+                            "days"
+                        ]
+                    }
+                ],
+                "title": "SaveCalendarRequest"
+            },
+            "TelegramWebhookRequest": {
+                "type": "object",
+                "properties": {
+                    "update_id": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "message": {
+                        "type": "object",
+                        "properties": {
+                            "text": {
+                                "type": "string"
+                            },
+                            "chat": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "from": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    },
+                                    "username": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 32
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "widget_query": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "maxLength": 128
+                            },
+                            "message_id": {
+                                "type": "integer",
+                                "minimum": 1
+                            },
+                            "data": {
+                                "type": "string",
+                                "maxLength": 64
+                            },
+                            "from": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "minimum": 1
+                                    }
+                                },
+                                "required": [
+                                    "id"
+                                ]
+                            },
+                            "chat": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "id": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "from",
+                            "data"
+                        ]
+                    }
+                },
+                "required": [
+                    "update_id"
+                ],
+                "title": "TelegramWebhookRequest"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthorizationException": {
+                "description": "Authorization error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

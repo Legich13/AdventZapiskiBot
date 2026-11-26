@@ -1,0 +1,27 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: max
+    tmpDir: vendor/.cache/advent-quality/phpstan
+    typeAliases:
+        FastStrictFixtureSkill: 'array{id: string, applyAt: list<string>, purpose: string, expectedOutcome: string}'
+        FastStrictFixtureCheck: 'array{id: string, kind: string, command: string, expected: string}'
+        FastStrictFixtureRequirement: 'array{id: string, type: string, statement: string, acceptance: list<array{id: string, statement: string}>}'
+        FastStrictFixtureTask: 'array{id: string, stage: string, title: string, objective: string, agentRole: string, executionMode: string, dependsOn: list<string>, ownedPaths: list<string>, createPaths: list<string>, deletePaths: list<string>, verificationMode: string, checks: list<FastStrictFixtureCheck>, skills: list<FastStrictFixtureSkill>, requirementIds: list<string>, acceptanceIds: list<string>}'
+        FastStrictFixtureGate: 'array{id: string, stage: string, command: string, evidenceId?: string}'
+        FastStrictFixtureReviewAxis: 'array{id: string, title: string, skills: list<FastStrictFixtureSkill>}'
+        FastStrictFixturePlan: 'array{protocolVersion: string, planId: string, slug: string, revision: int, supersedes: string|null, title: string, goal: string, createdAt: string, architecture: array{path: string, sha256: string, ruleIds: list<string>}, protocol: array{path: string, sha256: string}, scope: array{in: list<string>, out: list<string>}, requirements: list<FastStrictFixtureRequirement>, tasks: list<FastStrictFixtureTask>, gates: list<FastStrictFixtureGate>, reviewAxes: list<FastStrictFixtureReviewAxis>}'
+        FastStrictFixtureReason: 'array{id: string, reason: string}'
+        FastStrictFixtureStatusTask: 'array{id: string, state: string, executorId: string|null, usedSkills: list<string>, unavailableSkills: list<FastStrictFixtureReason>, skippedSkills: list<FastStrictFixtureReason>, evidenceIds: list<string>, handoffEvidenceId: string|null}'
+        FastStrictFixtureEvidence: 'array{id: string, stage: string, taskId: string|null, checkId: string|null, kind: string, path: string, sha256: string, command: string, exitCode: int, observedAt: string, gateId?: string|null, verifiedManifestSha256?: string|null}'
+        FastStrictFixtureReview: 'array{axisId: string, reviewerId: string|null, verdict: string, round: int, snapshotSha256: string|null, evidencePath: string|null, evidenceSha256: string|null, usedSkills: list<string>, unavailableSkills: list<FastStrictFixtureReason>, skippedSkills: list<FastStrictFixtureReason>, b0: int, b1: int, b2: int}'
+        FastStrictFixtureStatus: 'array{protocolVersion: string, planId: string, planRevision: int, planSha256: string, orchestratorId: string, overallState: string, currentStage: string, supersededBy: string|null, updatedAt: string, stages: list<array{id: string, state: string}>, tasks: list<FastStrictFixtureStatusTask>, activeWriters: list<array{writerId: string, taskIds: list<string>}>, evidence: list<FastStrictFixtureEvidence>, gateResults: list<array{id: string, state: string, evidenceId: string|null}>, snapshot: array{state: string, round: int, manifestPath: string|null, manifestSha256: string|null, bundleSha256: string|null}, reviews: list<FastStrictFixtureReview>, blockers: list<array{id: string, taskId: string|null, reason: string, openedAt: string}>}'
+    paths:
+        - app
+        - routes
+        - database
+        - tests
+    excludePaths:
+        - storage/*
+        - bootstrap/cache/*

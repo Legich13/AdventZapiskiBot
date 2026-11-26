@@ -1,0 +1,604 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "kazan-december-fast-tdd",
+  "planRevision": 1,
+  "planSha256": "791e7d7c2594ec94ee4eb932053b9418bdc38b9cfc525e4ab452b50ea9252bca",
+  "orchestratorId": "/root",
+  "overallState": "complete",
+  "currentStage": "007",
+  "supersededBy": null,
+  "updatedAt": "2026-11-26T17:55:36Z",
+  "stages": [
+    {
+      "id": "000",
+      "state": "complete"
+    },
+    {
+      "id": "001",
+      "state": "complete"
+    },
+    {
+      "id": "002",
+      "state": "complete"
+    },
+    {
+      "id": "003",
+      "state": "complete"
+    },
+    {
+      "id": "004",
+      "state": "complete"
+    },
+    {
+      "id": "005",
+      "state": "complete"
+    },
+    {
+      "id": "006",
+      "state": "complete"
+    },
+    {
+      "id": "007",
+      "state": "complete"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "state": "complete",
+      "executorId": "/root/notes",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-001",
+        "EVID-HANDOFF-TASK-001"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-001"
+    },
+    {
+      "id": "TASK-002",
+      "state": "complete",
+      "executorId": "/root/repo",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-002",
+        "EVID-HANDOFF-TASK-002"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-002"
+    },
+    {
+      "id": "TASK-003",
+      "state": "complete",
+      "executorId": "/root/migration",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-003",
+        "EVID-HANDOFF-TASK-003"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-003"
+    },
+    {
+      "id": "TASK-004",
+      "state": "complete",
+      "executorId": "/root/migration",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-4-10",
+        "EVID-GREEN-4-17",
+        "EVID-HANDOFF-TASK-004",
+        "EVID-QA-4-15",
+        "EVID-RED-004",
+        "EVID-RED-4-16"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-004"
+    },
+    {
+      "id": "TASK-005",
+      "state": "complete",
+      "executorId": "/root/runtime",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-5-12",
+        "EVID-GREEN-5-9",
+        "EVID-HANDOFF-TASK-005",
+        "EVID-QA-5-14",
+        "EVID-RED-005",
+        "EVID-RED-5-11"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-005"
+    },
+    {
+      "id": "TASK-006",
+      "state": "complete",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-6-8",
+        "EVID-HANDOFF-TASK-006",
+        "EVID-QA-6-13",
+        "EVID-RED-006"
+      ],
+      "handoffEvidenceId": "EVID-HANDOFF-TASK-006"
+    }
+  ],
+  "activeWriters": [],
+  "evidence": [
+    {
+      "id": "EVID-ANALYSIS-001",
+      "stage": "000",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "analysis",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-001.md",
+      "sha256": "af0f3a06b0c094afde675edfa33a85ce6988ef196823179d7e792d61e57e4781",
+      "command": "Сопоставить дни переписки и афиши организаторов.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-002",
+      "stage": "000",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "analysis",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-002.md",
+      "sha256": "cf017be607b6e145a3003c3788d629c8fe9138d442cc37e3d634fa396895c585",
+      "command": "Проверить поля Calendar, обработчик /start и выборку для рассылки.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-003",
+      "stage": "000",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "analysis",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-ANALYSIS-003.md",
+      "sha256": "2a90ffa6bf6c4fef38dc78d4ff34144d406e07195c6ceb0830abb7d31e6cd7d9",
+      "command": "Проверить уникальность календаря и сохранность профилей в PostgreSQL.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-BASELINE",
+      "stage": "001",
+      "taskId": null,
+      "checkId": null,
+      "kind": "baseline",
+      "path": "plan/kazan-december-fast-tdd/evidence/baseline.sha256",
+      "sha256": "89e468834c8cfca2fc5ca6c85bee90e5ea98ed9cfb0d1644feb8c4e223b19507",
+      "command": "Сопоставить исходные контрольные суммы с путями задач.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-004",
+      "stage": "002",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "red",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-RED-004.md",
+      "sha256": "448567b1bebb5381db9e18065520c2dbe7029bb90df0f08db7446e2a3c89f63f",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-005",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-RED-005.md",
+      "sha256": "bc078b763dc77f9fef7f26e57323eb8159d87a1cb646b985174b4738a5c19998",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-006",
+      "stage": "002",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "red",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-RED-006.md",
+      "sha256": "af5216f1542e3a64c1117e705faea9d80a09b3864d2db20253cddd6ce758752b",
+      "command": "make test-suite suite=StudioTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:51:29Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-6-8",
+      "stage": "003",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "green",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GREEN-6-8.md",
+      "sha256": "fa8d0800c383a382602a68058a69d37fdc33fe793f35221bb781df646fa6604c",
+      "command": "make test-suite suite=StudioTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:52:47Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-5-9",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GREEN-5-9.md",
+      "sha256": "84e073e87973ee7e6d51a64a33d8f1216e7f8e9e122e14985ec6f3672347c588",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:52:47Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-4-10",
+      "stage": "003",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "green",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GREEN-4-10.md",
+      "sha256": "4f86577fe45ea45e1b6f8380571d00bcadba7c55b1dbcb25430c5b1471ebad1f",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:52:47Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-5-11",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-RED-5-11.md",
+      "sha256": "fdd47c6857461ac7f911341b158694ef92198b4fe6ced3105519e54b3db8b1ad",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:52:47Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-5-12",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GREEN-5-12.md",
+      "sha256": "304bacf260fe7f229c5e2c8f583dfcb84a35bcd03ce1f3dc8dafddb63a0a4827",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:52:47Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-6-13",
+      "stage": "004",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "qa",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-QA-6-13.md",
+      "sha256": "fe5ee98a9a2653cc3e93936522b5bd51785185e074e34b108cc2cbd530f153b2",
+      "command": "make test-suite suite=StudioTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:32Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-5-14",
+      "stage": "004",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "qa",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-QA-5-14.md",
+      "sha256": "3544c93c91b15b2f8138f4f0db08f754a5a79fe276f32e682936d4d9b1e244c5",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:32Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-4-15",
+      "stage": "004",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "qa",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-QA-4-15.md",
+      "sha256": "629741ff33e5802141c06bfbd4f79c4474b8fae45050ec06fade80bc87300334",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:32Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-4-16",
+      "stage": "002",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "red",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-RED-4-16.md",
+      "sha256": "b6b467873ba09ff872f3a4e136a1d7ea1d9c5e13738d02c6013d93a668508199",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:53:38Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-4-17",
+      "stage": "003",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "green",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GREEN-4-17.md",
+      "sha256": "de76b2164541c0f25543019f6a6be9cf3743d7c3a3b856c0579c3bcc4423fcbe",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:53:38Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-001",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-001.md",
+      "sha256": "b9cdff44ff9c21c58eebed0416d2c0971cb8a8d7a4ccfb8d3d8075ec9e8930e8",
+      "command": "make quality",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:02Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "c55e13102ecb4154c4c93d6545212718613d781a943630d8894664b753d286c5"
+    },
+    {
+      "id": "EVID-GATE-PRECOMMIT-ATTEMPT-001",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-001.md",
+      "sha256": "e4506b3b778c6cbb5e496c5c85a71a80c7581ce3d26bdafcc924590690f5bcbc",
+      "command": "make pre-commit",
+      "exitCode": 2,
+      "observedAt": "2026-11-26T17:54:32Z",
+      "gateId": "GATE-PRECOMMIT",
+      "verifiedManifestSha256": "c55e13102ecb4154c4c93d6545212718613d781a943630d8894664b753d286c5"
+    },
+    {
+      "id": "EVID-GATE-PRECOMMIT-ATTEMPT-002",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-002.md",
+      "sha256": "4ddd0e909491f6e8483ab8a4a434f7e0a7a40d64bc498dcd8bb464ada44e3d5c",
+      "command": "make pre-commit",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:44Z",
+      "gateId": "GATE-PRECOMMIT",
+      "verifiedManifestSha256": "c55e13102ecb4154c4c93d6545212718613d781a943630d8894664b753d286c5"
+    },
+    {
+      "id": "EVID-SNAPSHOT-ROUND-1",
+      "stage": "006",
+      "taskId": null,
+      "checkId": null,
+      "kind": "snapshot",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-SNAPSHOT-ROUND-1.md",
+      "sha256": "acf99b65ff761a7632f55d9df1ebbdf6b7490d596ad601742aa4d7c69bc85387",
+      "command": "Зафиксировать манифест файлов и хеш комплекта доказательств.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:54:44Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-001",
+      "stage": "007",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-001.md",
+      "sha256": "118aa63336491a8a6354f9fe6771c5eaab81d1368f5b7e51f90c39de51188bd1",
+      "command": "Сопоставить дни переписки и афиши организаторов.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-002",
+      "stage": "007",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-002.md",
+      "sha256": "0df3a514691165a7127e30080c2c19a593c912ab1933a87f01ed7194c7c22d5a",
+      "command": "Проверить поля Calendar, обработчик /start и выборку для рассылки.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-003",
+      "stage": "007",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-003.md",
+      "sha256": "94e9f9a06512bfc27d548c5a52448291cc4285212e07241b878caaa07adb05f1",
+      "command": "Проверить уникальность календаря и сохранность профилей в PostgreSQL.",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-004",
+      "stage": "007",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-004.md",
+      "sha256": "1c291064b6f0c4ef01f179d4e6e82eea7ae6b4c8e9c46838263189a827e93566",
+      "command": "make test-suite suite=KazanDataMigration",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-005",
+      "stage": "007",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-005.md",
+      "sha256": "5a6a61f5845855f747606454f998bdc2e74a69399dadb9f972dc1d68eb025e7c",
+      "command": "make test-suite suite=TelegramReservedCalendarTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-HANDOFF-TASK-006",
+      "stage": "007",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "handoff",
+      "path": "plan/kazan-december-fast-tdd/evidence/EVID-HANDOFF-TASK-006.md",
+      "sha256": "3f4593d93ca9b5e51b51813540684f78dac28d0711bcd0c428d1eea7047005fa",
+      "command": "make test-suite suite=StudioTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-26T17:55:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    }
+  ],
+  "gateResults": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "state": "passed",
+      "evidenceId": "EVID-GATE-PRECOMMIT-ATTEMPT-002"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "state": "passed",
+      "evidenceId": "EVID-GATE-QUALITY-ATTEMPT-001"
+    }
+  ],
+  "snapshot": {
+    "state": "frozen",
+    "round": 1,
+    "manifestPath": "plan/kazan-december-fast-tdd/evidence/final.sha256",
+    "manifestSha256": "c55e13102ecb4154c4c93d6545212718613d781a943630d8894664b753d286c5",
+    "bundleSha256": "8693d572990ba6a023f3e0079bc6d1488eeb99492350073e70d5236037bb54c7"
+  },
+  "reviews": [
+    {
+      "axisId": "REV-SECURITY-PRIVACY-DATA",
+      "reviewerId": "/root/review_data",
+      "verdict": "go",
+      "round": 1,
+      "snapshotSha256": "8693d572990ba6a023f3e0079bc6d1488eeb99492350073e70d5236037bb54c7",
+      "evidencePath": "plan/kazan-december-fast-tdd/reviews/round-1-security-privacy-data.md",
+      "evidenceSha256": "2c13d9a8ff08e7d49c6c25aaff8d880c959faca0f749e6ca08818b79745e8ec8",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-ARCHITECTURE-API-PONYTAIL",
+      "reviewerId": "/root/review_arch",
+      "verdict": "go",
+      "round": 1,
+      "snapshotSha256": "8693d572990ba6a023f3e0079bc6d1488eeb99492350073e70d5236037bb54c7",
+      "evidencePath": "plan/kazan-december-fast-tdd/reviews/round-1-architecture-api-ponytail.md",
+      "evidenceSha256": "0421f41fe9df75b8712bb9c753c5ba1e77601ef74065c179f4c0eb88eb6b2913",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-SPEC-TDD-UX-A11Y",
+      "reviewerId": "/root/review_product",
+      "verdict": "go",
+      "round": 1,
+      "snapshotSha256": "8693d572990ba6a023f3e0079bc6d1488eeb99492350073e70d5236037bb54c7",
+      "evidencePath": "plan/kazan-december-fast-tdd/reviews/round-1-spec-tdd-ux-a11y.md",
+      "evidenceSha256": "a95caff6f2b684b983e9d24b280a0b08ff62e8975bae293b94e86b19fb505b63",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "ponytail:ponytail-review"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    }
+  ],
+  "blockers": []
+}

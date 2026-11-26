@@ -1,0 +1,721 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "advent-calendar-fast-tdd",
+  "slug": "advent-calendar",
+  "revision": 1,
+  "supersedes": null,
+  "title": "Адвент-календарь в Telegram с утренним подарком",
+  "goal": "Автор публикует персональные подарки, а получатель открывает их из календаря и праздничной карточки, отправленной с 10:00 МСК.",
+  "createdAt": "2026-11-26T16:56:15Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "8165e2a2bcb2a80f6a40dfd5e4a9c99b2df3f54e9d10e7195626098f63fd4c3a",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-CALENDAR-001",
+      "ARCH-CALENDAR-002",
+      "ARCH-LOCAL-001",
+      "ARCH-PLAN-001",
+      "ARCH-TELEGRAM-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Локальные Laravel, PostgreSQL, Filament, бот и редактор календаря.",
+      "Публикация, вручение, открытие подарка и ежедневная отдельная карточка.",
+      "Проверяемый процесс FAST_STRICT/2, Pest TDD и независимые ревью."
+    ],
+    "out": [
+      "Доступ к реальному боту и публичная выкладка до выдачи учётных данных."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "constraint",
+      "statement": "Строгий учёт задач",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Валидатор принимает корректный план и диагностирует повреждённое доказательство."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "statement": "Авторский календарь",
+      "acceptance": [
+        {
+          "id": "AC-002",
+          "statement": "Автор сохраняет черновик, выбирает текст на каждый отмеченный день, публикует после заполнения и исправляет будущие записки."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Вручение и доступ",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "При первом запуске ник сопоставляется без учёта регистра. Получатель закреплён за Telegram ID и имеет один опубликованный календарь за месяц. Первое открытие с московской полуночи сохраняется однократно."
+        }
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "type": "functional",
+      "statement": "Виджеты",
+      "acceptance": [
+        {
+          "id": "AC-004",
+          "statement": "Календарь и карточка используют один обработчик, сохраняют дату старого сообщения, ограничивают HTML и ответ в байтах, скрывают будущие записки."
+        }
+      ]
+    },
+    {
+      "id": "REQ-005",
+      "type": "functional",
+      "statement": "Утренние сообщения",
+      "acceptance": [
+        {
+          "id": "AC-005",
+          "statement": "Получатель, привязанный к 10:00 МСК, получает отдельную карточку, в том числе после утреннего открытия. Нет подарка — нет отправки. 429 откладывает повтор, неоднозначный результат исключает автоматический дубль."
+        }
+      ]
+    },
+    {
+      "id": "REQ-006",
+      "type": "functional",
+      "statement": "Локальный просмотр и сотрудники",
+      "acceptance": [
+        {
+          "id": "AC-006",
+          "statement": "Локально доступны форма, часы, тестовые роли и реальные виджеты. Панель показывает автора, получателя, открытия и доставку. В production тестовые маршруты отсутствуют."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Пользовательский путь",
+      "objective": "Определить правила публикации, получения и повторного открытия.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Сопоставить правила создания, вручения и открытия с пользовательским сценарием.",
+          "expected": "Разделены черновик, публикация, привязка и первое открытие."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-005",
+        "REQ-006"
+      ],
+      "acceptanceIds": [
+        "AC-002",
+        "AC-003",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Архитектура",
+      "objective": "Установить границы авторизации, хранения и нативного транспорта.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Сопоставить архитектуру приложения, контракт Jobgram и платформенные границы Telegram.",
+          "expected": "Выделены общая операция открытия, изолированный стенд и независимое состояние отправки."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005",
+        "REQ-006"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "Риски доставки",
+      "objective": "Определить проверяемые риски очереди, квот и смены даты.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Проверить пределы виджетов, коллизии отправки и последствия потери ответа.",
+          "expected": "Выделены проверка размера, дедупликация и неопределённый исход."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-003",
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "002",
+      "title": "Валидатор плана",
+      "objective": "Подключить перенесённый Artisan-валидатор и негативные контрактные тесты.",
+      "agentRole": "planning",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "backend/app/Console/Commands/ValidateFastPlanCommand.php",
+        "backend/app/Support/Planning/FastPlanValidator.php",
+        "backend/tests/Feature/Planning/ValidateFastPlanCommandTest.php",
+        "plan.mk"
+      ],
+      "createPaths": [
+        "backend/app/Console/Commands/ValidateFastPlanCommand.php",
+        "backend/app/Support/Planning/FastPlanValidator.php",
+        "backend/tests/Feature/Planning/ValidateFastPlanCommandTest.php",
+        "plan.mk"
+      ],
+      "deletePaths": [],
+      "verificationMode": "contract",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "contract",
+          "command": "make test-suite suite=ValidateFastPlanCommandTest",
+          "expected": "Без команды тесты не проходят. После переноса валидные планы проходят, повреждённые получают ожидаемые FPV-коды."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001"
+      ],
+      "acceptanceIds": [
+        "AC-001"
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "stage": "002",
+      "title": "Календарь и Mini App",
+      "objective": "Сохранить, вручить и открыть календарь с проверкой автора, даты и неизменяемого ID.",
+      "agentRole": "calendar",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "backend/app/Calendar/CalendarEditor.php",
+        "backend/app/Calendar/CalendarInput.php",
+        "backend/app/Calendar/CalendarRepository.php",
+        "backend/app/Calendar/Calendars.php",
+        "backend/app/Calendar/MiniAppIdentity.php",
+        "backend/app/Http/Controllers/CalendarController.php",
+        "backend/app/Http/Controllers/MiniAppSessionController.php",
+        "backend/app/Http/Middleware/MiniAppSession.php",
+        "backend/app/Http/Requests/SaveCalendarRequest.php",
+        "backend/app/Models/Calendar.php",
+        "backend/app/Models/GiftDay.php",
+        "backend/app/Models/TelegramUser.php",
+        "backend/database/migrations/2026_01_01_000001_create_calendars.php",
+        "backend/routes/calendar.php",
+        "backend/tests/Feature/CalendarFlowTest.php"
+      ],
+      "createPaths": [
+        "backend/app/Calendar/CalendarEditor.php",
+        "backend/app/Calendar/CalendarInput.php",
+        "backend/app/Calendar/CalendarRepository.php",
+        "backend/app/Calendar/Calendars.php",
+        "backend/app/Calendar/MiniAppIdentity.php",
+        "backend/app/Http/Controllers/CalendarController.php",
+        "backend/app/Http/Controllers/MiniAppSessionController.php",
+        "backend/app/Http/Middleware/MiniAppSession.php",
+        "backend/app/Http/Requests/SaveCalendarRequest.php",
+        "backend/app/Models/Calendar.php",
+        "backend/app/Models/GiftDay.php",
+        "backend/app/Models/TelegramUser.php",
+        "backend/database/migrations/2026_01_01_000001_create_calendars.php",
+        "backend/routes/calendar.php",
+        "backend/tests/Feature/CalendarFlowTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-005",
+          "kind": "tdd",
+          "command": "make test-suite suite=Calendar",
+          "expected": "Сценарии сначала обнаруживают отсутствие доменной операции, затем подтверждают публикацию, доступ и повторное открытие."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-002",
+        "AC-003"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "stage": "002",
+      "title": "Telegram и рассылка",
+      "objective": "Отобразить две нативные карточки и доставить утренний подарок однократно.",
+      "agentRole": "telegram",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        "backend/app/Console/Commands/DispatchMorning.php",
+        "backend/app/Http/Controllers/TelegramWebhookController.php",
+        "backend/app/Jobs/SendMorningGift.php",
+        "backend/app/Telegram/MorningReminders.php",
+        "backend/app/Telegram/TelegramGateway.php",
+        "backend/app/Telegram/WidgetMessages.php",
+        "backend/app/Telegram/WidgetRenderer.php",
+        "backend/database/migrations/2026_01_02_000001_create_widget_messages_and_deliveries.php",
+        "backend/resources/views/widgets/calendar.blade.php",
+        "backend/resources/views/widgets/gift.blade.php",
+        "backend/resources/views/widgets/morning.blade.php",
+        "backend/resources/views/widgets/script.blade.php",
+        "backend/resources/views/widgets/style.blade.php",
+        "backend/routes/telegram.php",
+        "backend/tests/Feature/TelegramWidgetTest.php"
+      ],
+      "createPaths": [
+        "backend/app/Console/Commands/DispatchMorning.php",
+        "backend/app/Http/Controllers/TelegramWebhookController.php",
+        "backend/app/Jobs/SendMorningGift.php",
+        "backend/app/Telegram/MorningReminders.php",
+        "backend/app/Telegram/TelegramGateway.php",
+        "backend/app/Telegram/WidgetMessages.php",
+        "backend/app/Telegram/WidgetRenderer.php",
+        "backend/database/migrations/2026_01_02_000001_create_widget_messages_and_deliveries.php",
+        "backend/resources/views/widgets/calendar.blade.php",
+        "backend/resources/views/widgets/gift.blade.php",
+        "backend/resources/views/widgets/morning.blade.php",
+        "backend/resources/views/widgets/script.blade.php",
+        "backend/resources/views/widgets/style.blade.php",
+        "backend/routes/telegram.php",
+        "backend/tests/Feature/TelegramWidgetTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-006",
+          "kind": "tdd",
+          "command": "make test-suite suite=Telegram",
+          "expected": "Сценарии выявляют отсутствующие виджеты/доставку, затем подтверждают требования по срокам, доступу и квотам."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-007",
+      "stage": "002",
+      "title": "Локальная студия и админка",
+      "objective": "Поднять приложение в Docker и пройти реальный пользовательский путь через dev и Filament.",
+      "agentRole": "studio",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [
+        ".gitignore",
+        "Makefile",
+        "README.md",
+        "backend/.dockerignore",
+        "backend/.editorconfig",
+        "backend/.env.example",
+        "backend/.gitattributes",
+        "backend/.gitignore",
+        "backend/Dockerfile",
+        "backend/app/Console/Commands/CreateStaff.php",
+        "backend/app/Console/Commands/SeedDemo.php",
+        "backend/app/Filament/Pages/Overview.php",
+        "backend/app/Http/Controllers/Controller.php",
+        "backend/app/Http/Controllers/DevController.php",
+        "backend/app/Http/Middleware/PreviewClock.php",
+        "backend/app/Models/User.php",
+        "backend/app/Providers/AppServiceProvider.php",
+        "backend/app/Providers/Filament/AdminPanelProvider.php",
+        "backend/artisan",
+        "backend/bootstrap/app.php",
+        "backend/bootstrap/cache/.gitignore",
+        "backend/bootstrap/providers.php",
+        "backend/composer.json",
+        "backend/composer.lock",
+        "backend/config/app.php",
+        "backend/config/auth.php",
+        "backend/config/cache.php",
+        "backend/config/database.php",
+        "backend/config/filesystems.php",
+        "backend/config/logging.php",
+        "backend/config/mail.php",
+        "backend/config/queue.php",
+        "backend/config/services.php",
+        "backend/config/session.php",
+        "backend/database/.gitignore",
+        "backend/database/factories/UserFactory.php",
+        "backend/database/migrations/0001_01_01_000000_create_users_table.php",
+        "backend/database/migrations/0001_01_01_000001_create_cache_table.php",
+        "backend/database/migrations/0001_01_01_000002_create_jobs_table.php",
+        "backend/database/seeders/DatabaseSeeder.php",
+        "backend/phpstan.neon",
+        "backend/phpunit.xml",
+        "backend/public/.htaccess",
+        "backend/public/favicon.ico",
+        "backend/public/index.php",
+        "backend/public/robots.txt",
+        "backend/public/studio.css",
+        "backend/public/studio.js",
+        "backend/resources/views/app.blade.php",
+        "backend/resources/views/dev.blade.php",
+        "backend/resources/views/filament/pages/overview.blade.php",
+        "backend/resources/views/layouts/studio.blade.php",
+        "backend/routes/console.php",
+        "backend/routes/dev.php",
+        "backend/routes/web.php",
+        "backend/storage/app/.gitignore",
+        "backend/storage/app/private/.gitignore",
+        "backend/storage/app/public/.gitignore",
+        "backend/storage/framework/.gitignore",
+        "backend/storage/framework/cache/.gitignore",
+        "backend/storage/framework/cache/data/.gitignore",
+        "backend/storage/framework/cache/locks/.gitignore",
+        "backend/storage/framework/sessions/.gitignore",
+        "backend/storage/framework/testing/.gitignore",
+        "backend/storage/framework/views/.gitignore",
+        "backend/storage/logs/.gitignore",
+        "backend/tests/Feature/StudioTest.php",
+        "backend/tests/Pest.php",
+        "backend/tests/TestCase.php",
+        "compose.yaml",
+        "infra/test-databases.sql"
+      ],
+      "createPaths": [
+        ".gitignore",
+        "Makefile",
+        "README.md",
+        "backend/.dockerignore",
+        "backend/.editorconfig",
+        "backend/.env.example",
+        "backend/.gitattributes",
+        "backend/.gitignore",
+        "backend/Dockerfile",
+        "backend/app/Console/Commands/CreateStaff.php",
+        "backend/app/Console/Commands/SeedDemo.php",
+        "backend/app/Filament/Pages/Overview.php",
+        "backend/app/Http/Controllers/Controller.php",
+        "backend/app/Http/Controllers/DevController.php",
+        "backend/app/Http/Middleware/PreviewClock.php",
+        "backend/app/Models/User.php",
+        "backend/app/Providers/AppServiceProvider.php",
+        "backend/app/Providers/Filament/AdminPanelProvider.php",
+        "backend/artisan",
+        "backend/bootstrap/app.php",
+        "backend/bootstrap/cache/.gitignore",
+        "backend/bootstrap/providers.php",
+        "backend/composer.json",
+        "backend/composer.lock",
+        "backend/config/app.php",
+        "backend/config/auth.php",
+        "backend/config/cache.php",
+        "backend/config/database.php",
+        "backend/config/filesystems.php",
+        "backend/config/logging.php",
+        "backend/config/mail.php",
+        "backend/config/queue.php",
+        "backend/config/services.php",
+        "backend/config/session.php",
+        "backend/database/.gitignore",
+        "backend/database/factories/UserFactory.php",
+        "backend/database/migrations/0001_01_01_000000_create_users_table.php",
+        "backend/database/migrations/0001_01_01_000001_create_cache_table.php",
+        "backend/database/migrations/0001_01_01_000002_create_jobs_table.php",
+        "backend/database/seeders/DatabaseSeeder.php",
+        "backend/phpstan.neon",
+        "backend/phpunit.xml",
+        "backend/public/.htaccess",
+        "backend/public/favicon.ico",
+        "backend/public/index.php",
+        "backend/public/robots.txt",
+        "backend/public/studio.css",
+        "backend/public/studio.js",
+        "backend/resources/views/app.blade.php",
+        "backend/resources/views/dev.blade.php",
+        "backend/resources/views/filament/pages/overview.blade.php",
+        "backend/resources/views/layouts/studio.blade.php",
+        "backend/routes/console.php",
+        "backend/routes/dev.php",
+        "backend/routes/web.php",
+        "backend/storage/app/.gitignore",
+        "backend/storage/app/private/.gitignore",
+        "backend/storage/app/public/.gitignore",
+        "backend/storage/framework/.gitignore",
+        "backend/storage/framework/cache/.gitignore",
+        "backend/storage/framework/cache/data/.gitignore",
+        "backend/storage/framework/cache/locks/.gitignore",
+        "backend/storage/framework/sessions/.gitignore",
+        "backend/storage/framework/testing/.gitignore",
+        "backend/storage/framework/views/.gitignore",
+        "backend/storage/logs/.gitignore",
+        "backend/tests/Feature/StudioTest.php",
+        "backend/tests/Pest.php",
+        "backend/tests/TestCase.php",
+        "compose.yaml",
+        "infra/test-databases.sql"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-007",
+          "kind": "tdd",
+          "command": "make test-suite suite=StudioTest",
+          "expected": "Сначала локальный маршрут и защита отсутствуют. Готовая студия использует реальные интерфейсы, тестовый вход отсутствует в production."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-004",
+        "REQ-005",
+        "REQ-006"
+      ],
+      "acceptanceIds": [
+        "AC-002",
+        "AC-004",
+        "AC-005",
+        "AC-006"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    }
+  ]
+}
