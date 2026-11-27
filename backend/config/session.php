@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Str;
 
+$telegramWeb = parse_url((string) config('app.url'), PHP_URL_SCHEME) === 'https';
+
 return [
 
     /*
@@ -169,7 +171,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE', $telegramWeb),
 
     /*
     |--------------------------------------------------------------------------
@@ -190,8 +192,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | This option determines how your cookies behave when cross-site requests
-    | take place, and can be used to mitigate CSRF attacks. By default, we
-    | will set this value to "lax" to permit secure cross-site requests.
+    | take place. Telegram Web embeds the public HTTPS Mini App in a frame
+    | on a different site. The local HTTP workshop uses a first-party cookie.
     |
     | See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value
     |
@@ -199,7 +201,7 @@ return [
     |
     */
 
-    'same_site' => env('SESSION_SAME_SITE', 'lax'),
+    'same_site' => env('SESSION_SAME_SITE', $telegramWeb ? 'none' : 'lax'),
 
     /*
     |--------------------------------------------------------------------------
@@ -212,7 +214,7 @@ return [
     |
     */
 
-    'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
+    'partitioned' => env('SESSION_PARTITIONED_COOKIE', $telegramWeb),
 
     /*
     |--------------------------------------------------------------------------

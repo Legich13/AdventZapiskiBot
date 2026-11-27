@@ -24,10 +24,11 @@ use Illuminate\Support\ServiceProvider;
 final class ApiDocumentationServiceProvider extends ServiceProvider
 {
     private const array OPERATIONS = [
-        'app/session' => ['miniAppSession', 'Войти в редактор через Telegram'],
+        'app/session' => ['miniAppSession', 'Войти в Mini App через Telegram'],
         'app/calendars' => ['saveCalendarDraft', 'Сохранить новый черновик'],
         'app/calendars/{calendar}' => ['updateCalendar', 'Сохранить изменения календаря'],
         'app/calendars/{calendar}/publish' => ['publishCalendar', 'Опубликовать подготовленный календарь'],
+        'app/received/{calendar}/{date}/open' => ['openReceivedGift', 'Открыть или перечитать записку за выбранную дату'],
         'telegram/webhook' => ['receiveTelegramUpdate', 'Обработать событие бота'],
     ];
 
@@ -50,6 +51,7 @@ final class ApiDocumentationServiceProvider extends ServiceProvider
             $api->servers = [new Server('/')];
             $api->components->addSecurityScheme('editorSession', new ApiKeySecurityScheme('cookie', Config::string('session.cookie')));
             $api->components->addSecurityScheme('csrf', new ApiKeySecurityScheme('header', 'X-CSRF-TOKEN'));
+            $api->components->addSecurityScheme('miniAppLaunch', new ApiKeySecurityScheme('header', 'X-Mini-App-Launch'));
             $api->components->addSecurityScheme('telegramWebhook', new ApiKeySecurityScheme('header', 'X-Telegram-Bot-Api-Secret-Token'));
         })
             ->withOperationTransformers(static function (Operation $operation, RouteInfo $route): void {
@@ -60,13 +62,18 @@ final class ApiDocumentationServiceProvider extends ServiceProvider
                 $operation->security = [new SecurityRequirement(match ($uri) {
                     'telegram/webhook' => ['telegramWebhook' => []],
                     'app/session' => ['csrf' => []],
-                    default => ['editorSession' => [], 'csrf' => []],
+                    default => ['editorSession' => [], 'csrf' => [], 'miniAppLaunch' => []],
                 })];
                 if ($uri !== 'telegram/webhook') {
                     $operation->addResponse(Response::make(429)->setDescription('Лимит частоты запросов исчерпан.'));
                     $operation->addResponse(Response::make(401)->setDescription('Требуется подтверждённая сессия Mini App или действительная подпись Telegram.'));
+                    $operation->addResponse(Response::make(419)->setDescription('Обновите страницу, чтобы получить действующий CSRF-токен.'));
                     if (str_starts_with($uri, 'app/calendars/{calendar}')) {
                         $operation->addResponse(Response::make(409)->setDescription('Месяц получателя уже занят.'));
+                    }
+                    if ($id === 'openReceivedGift') {
+                        $operation->addResponse(Response::make(403)->setDescription('Календарь не вручён этому получателю или дата ещё не наступила.'));
+                        $operation->addResponse(Response::make(404)->setDescription('Дата отсутствует в календаре.'));
                     }
                 } else {
                     $operation->addResponse(Response::make(403)->setDescription('Неверный секрет webhook.'));

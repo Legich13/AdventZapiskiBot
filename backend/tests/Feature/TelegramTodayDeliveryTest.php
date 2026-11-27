@@ -10,7 +10,11 @@ use App\Models\TelegramUser;
 use App\Models\WidgetMessage;
 use App\Studio\DemoProfiles;
 use App\Support\GiftClock;
+use App\Telegram\Actions\DeliverMorningGiftAction;
 use App\Telegram\Actions\DispatchMorningRemindersAction;
+use App\Telegram\Actions\HandleTelegramUpdateAction;
+use App\Telegram\DTO\BotMessageDTO;
+use App\Telegram\DTO\StartUpdateDTO;
 use App\Telegram\Infrastructure\NutgramGateway;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,7 +30,8 @@ use function Pest\Laravel\mock;
 use function Pest\Laravel\post;
 use function Pest\Laravel\postJson;
 use function Pest\Laravel\withHeader;
-use function Pest\Laravel\withSession;
+
+use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 
 uses(RefreshDatabase::class);
 
@@ -77,9 +82,9 @@ test('публикация себе с десяти часов сразу ста
     $calendar = Calendar::factory()->create();
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('sendWidget')->once()->with($calendar->author_id, Mockery::type('string'), '7 декабря · Для тебя есть подарок ✨')->andReturn(7001);
+    $gateway->shouldReceive('send')->once()->with($calendar->author_id, Mockery::on(static fn (BotMessageDTO $message): bool => $message->giftDate === '2026-12-07'))->andReturn(7001);
 
-    withSession(['telegram_id' => $calendar->author_id])->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
+    asMiniAppViewer($calendar->author_id)->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
 
     expect(DB::table('jobs')->count())->toBe(1)
         ->and(WidgetMessage::query()->count())->toBe(0);
@@ -98,9 +103,9 @@ test('поздний старт сразу ставит сегодняшнюю �
     ]);
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->twice()->with($recipient->id);
-    $gateway->shouldReceive('sendWidget')->twice()->with($recipient->id, Mockery::type('string'), 'Декабрь чудес · 2026')->andReturn(7101, 7102);
-    $gateway->shouldReceive('sendWidget')->once()->with($recipient->id, Mockery::type('string'), '7 декабря · Для тебя есть подарок ✨')->andReturn(7103);
+    $gateway->shouldReceive('send')->once()->with($recipient->id, Mockery::on(static fn (BotMessageDTO $message): bool => $message->appPath === '/app'))->andReturn(7102);
+    $gateway->shouldReceive('send')->once()->with($recipient->id, Mockery::on(static fn (BotMessageDTO $message): bool => $message->photo !== null))->andReturn(7101);
+    $gateway->shouldReceive('send')->once()->with($recipient->id, Mockery::on(static fn (BotMessageDTO $message): bool => $message->giftDate === '2026-12-07'))->andReturn(7103);
     $command = ['update_id' => 701, 'message' => [
         'text' => '/start', 'chat' => ['id' => $recipient->id, 'type' => 'private'],
         'from' => ['id' => $recipient->id, 'username' => $assigned ? 'renamed_reader' : 'today_reader'],
@@ -144,7 +149,7 @@ test('публикация до десяти ждёт утреннего пла�
     Carbon::setTestNow('2026-12-07 06:59:59 UTC');
     $calendar = Calendar::factory()->create();
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
-    withSession(['telegram_id' => $calendar->author_id]);
+    asMiniAppViewer($calendar->author_id);
     postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
     Artisan::call('calendar:morning');
     expect(DB::table('jobs')->count())->toBe(0);
@@ -164,7 +169,7 @@ test('публикация до десяти ждёт утреннего пла�
 test('публикация не отправляет прошлый или будущий подарок', function (string $date): void {
     $calendar = Calendar::factory()->create();
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => $date]);
-    withSession(['telegram_id' => $calendar->author_id])->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
+    asMiniAppViewer($calendar->author_id)->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
     Artisan::call('calendar:morning');
     expect(DB::table('jobs')->count())->toBe(0)
         ->and(MorningDelivery::query()->count())->toBe(0);
@@ -175,7 +180,7 @@ test('публикация другому человеку ждёт вручен
     GiftDay::factory()->create(['calendar_id' => $other->id, 'date' => '2026-12-07']);
     $calendar = Calendar::factory()->create(['is_self' => false, 'recipient_username' => 'waiting_reader']);
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
-    withSession(['telegram_id' => $calendar->author_id])->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
+    asMiniAppViewer($calendar->author_id)->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
     expect(DB::table('jobs')->count())->toBe(0);
 
     $self = Calendar::factory()->create(['author_id' => $calendar->author_id, 'month' => '2026-11-01']);
@@ -197,7 +202,7 @@ test('планировщик подбирает позднее вручение 
     expect(DB::table('jobs')->count())->toBe(1);
     todayDeliveryWorker();
     expect(MorningDelivery::query()->sole()->status)->toBe('sent')
-        ->and(WidgetMessage::query()->sole()->html)->toContain('Посмотреть ещё раз');
+        ->and(WidgetMessage::query()->sole()->button_text)->toBe('Посмотреть ещё раз');
 });
 
 test('внешний коммит выпускает отправку а откат отменяет публикацию и резерв', function (bool $commit): void {
@@ -205,12 +210,12 @@ test('внешний коммит выпускает отправку а отк�
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
     $gateway = mock(NutgramGateway::class);
     if ($commit) {
-        $gateway->shouldReceive('sendWidget')->once()->andReturn(7201);
+        $gateway->shouldReceive('send')->once()->andReturn(7201);
     } else {
-        $gateway->shouldNotReceive('sendWidget');
+        $gateway->shouldNotReceive('send');
     }
     DB::beginTransaction();
-    withSession(['telegram_id' => $calendar->author_id])->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
+    asMiniAppViewer($calendar->author_id)->postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
     expect(DB::table('jobs')->count())->toBe(0)
         ->and(WidgetMessage::query()->count())->toBe(0);
     if ($commit) {
@@ -232,13 +237,12 @@ test('откат внешней транзакции отменяет поздн
     $calendar = Calendar::factory()->create(['is_self' => false, 'recipient_username' => $recipient->username, 'published_at' => now()]);
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->once();
-    $gateway->shouldReceive('sendWidget')->once()->with($recipient->id, Mockery::type('string'), 'Декабрь чудес · 2026')->andReturn(7301);
+    $gateway->shouldNotReceive('send');
 
     DB::beginTransaction();
     withHeader('X-Telegram-Bot-Api-Secret-Token', 'today-rollback')->postJson('/telegram/webhook', [
         'update_id' => 731, 'message' => ['text' => '/start', 'chat' => ['id' => $recipient->id, 'type' => 'private'], 'from' => ['id' => $recipient->id, 'username' => $recipient->username]],
-    ])->assertNoContent();
+    ])->assertStatus(503);
     expect(DB::table('jobs')->count())->toBe(0);
     DB::rollBack();
     expect($calendar->refresh()->claimed_at)->toBeNull()
@@ -254,6 +258,7 @@ test('публикация себе в мастерской сохраняет �
     GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
     withHeader('Sec-Fetch-Site', 'same-origin');
     post('/dev/session', ['telegram_id' => $author->id, 'time' => '2026-12-07T14:00'])->assertRedirect();
+    withHeader('X-CSRF-TOKEN', (string) session()->token());
     DB::beginTransaction();
     postJson('/app/calendars/'.$calendar->id.'/publish')->assertSuccessful();
     expect(DB::table('jobs')->count())->toBe(0)
@@ -272,7 +277,7 @@ test('планировщик в отдельном процессе пересе
     $author = $calendar->author_id;
     GiftDay::factory()->create(['calendar_id' => $id, 'date' => '2026-12-07']);
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('sendWidget')->once()->andReturn(7401);
+    $gateway->shouldReceive('send')->once()->andReturn(7401);
 
     // Дочерний планировщик должен видеть исходный черновик через своё соединение.
     $connection = DB::connection();
@@ -297,4 +302,112 @@ test('планировщик в отдельном процессе пересе
         TelegramUser::query()->whereKey($author)->delete();
         $connection->beginTransaction();
     }
+});
+
+test('коммит позднего старта допускает отправку и сохраняет интервал отказа для следующего webhook', function (): void {
+    config(['services.telegram.webhook_secret' => 'commit-test']);
+    $gateway = mock(NutgramGateway::class);
+    $sent = 0;
+    $gateway->shouldReceive('send')->twice()->andReturnUsing(static function () use (&$sent): int {
+        if (++$sent === 1) {
+            throw new TelegramException('Too many', 429, parameters: ['retry_after' => 17]);
+        }
+
+        return 7451;
+    });
+    $request = static fn () => postJson('/telegram/webhook', ['update_id' => 7451, 'message' => ['text' => '/start', 'chat' => ['id' => 101, 'type' => 'private'], 'from' => ['id' => 101]]]);
+    withHeader('X-Telegram-Bot-Api-Secret-Token', 'commit-test');
+    DB::beginTransaction();
+    try {
+        $request()->assertStatus(503);
+        expect($sent)->toBe(0);
+    } finally {
+        DB::commit();
+    }
+    expect($sent)->toBe(1);
+    $request()->assertStatus(503)->assertHeader('Retry-After', '17');
+    Carbon::setTestNow(now()->addSeconds(17));
+    $request()->assertNoContent();
+    expect($sent)->toBe(2);
+});
+
+/** @return Closure():array{bool,int} */
+function schedulerWhileCoverIsSending(int $recipientId): Closure
+{
+    return static function () use ($recipientId): array {
+        Carbon::setTestNow('2026-12-07 11:00:00 UTC');
+        config(['queue.default' => 'database']);
+
+        return [
+            Calendar::query()->where('recipient_id', $recipientId)->whereNotNull('claimed_at')->exists(),
+            app(DispatchMorningRemindersAction::class)->execute($recipientId),
+        ];
+    };
+}
+
+test('утреннее сообщение ждёт подтверждения обложки при повторе и параллельной работе планировщика', function (): void {
+    $recipient = TelegramUser::factory()->create(['username' => 'wait_cover']);
+    $calendar = Calendar::factory()->create(['recipient_username' => 'wait_cover', 'published_at' => now(), 'is_self' => false]);
+    GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => '2026-12-07']);
+    $gateway = mock(NutgramGateway::class);
+    $recipientId = $recipient->id;
+    $gateway->shouldReceive('send')->once()->ordered()->andReturnUsing(static function () use ($recipientId): never {
+        $result = Concurrency::run([schedulerWhileCoverIsSending($recipientId)]);
+        expect($result)->toBe([[true, 0]]);
+        throw new TelegramException('Too many', 429, parameters: ['retry_after' => 11]);
+    });
+    $gateway->shouldReceive('send')->once()->ordered()->andReturn(7452);
+    $gateway->shouldReceive('send')->once()->ordered()->andReturn(7453);
+    $update = new StartUpdateDTO(7452, $recipient->id, 'wait_cover');
+    $handler = app(HandleTelegramUpdateAction::class);
+    // Планировщик в другом процессе видит зафиксированное вручение во время первого HTTP-запроса.
+    $connection = DB::connection();
+    $connection->commit();
+    try {
+        expect($handler->execute($update))->toBe(11);
+        Artisan::call('calendar:morning');
+        expect(DB::table('jobs')->count())->toBe(0);
+        Carbon::setTestNow(now()->addSeconds(11));
+        expect($handler->execute($update))->toBeNull()
+            ->and(DB::table('jobs')->count())->toBe(1);
+        todayDeliveryWorker();
+        expect(WidgetMessage::query()->orderBy('id')->pluck('telegram_message_id')->all())->toBe([7452, 7453]);
+    } finally {
+        $deliveryIds = MorningDelivery::query()->where('calendar_id', $calendar->id)->pluck('id');
+        foreach ($deliveryIds as $id) {
+            assert(is_int($id));
+            DB::table('jobs')->where('payload', 'like', '%SendMorningGift:'.$id.'"%')->delete();
+        }
+        DB::table('telegram_start_updates')->where('update_id', $update->updateId)->delete();
+        MorningDelivery::query()->where('calendar_id', $calendar->id)->delete();
+        WidgetMessage::query()->where('recipient_id', $recipientId)->delete();
+        $calendar->delete();
+        TelegramUser::whereKey([$calendar->author_id, $recipientId])->delete();
+        $connection->beginTransaction();
+    }
+});
+
+test('неопределённое вручение удерживает уже подготовленную доставку только в день старта', function (): void {
+    $recipient = TelegramUser::factory()->create(['username' => 'lost_cover']);
+    $calendar = Calendar::factory()->create(['recipient_username' => 'lost_cover', 'published_at' => now(), 'is_self' => false]);
+    foreach (['2026-12-07', '2026-12-08'] as $date) {
+        GiftDay::factory()->create(['calendar_id' => $calendar->id, 'date' => $date]);
+    }
+    $gateway = mock(NutgramGateway::class);
+    $gateway->shouldReceive('send')->once()->ordered()->andThrow(new RuntimeException('Потерян ответ Telegram'));
+    $gateway->shouldReceive('send')->once()->ordered()->with($recipient->id, Mockery::on(
+        static fn (BotMessageDTO $message): bool => $message->giftDate === '2026-12-08',
+    ))->andReturn(7457);
+    $update = new StartUpdateDTO(7456, $recipient->id, 'lost_cover');
+    $handler = app(HandleTelegramUpdateAction::class);
+    expect(fn () => $handler->execute($update))->toThrow(RuntimeException::class);
+    $handler->execute($update);
+    $staleJob = MorningDelivery::factory()->create(['recipient_id' => $recipient->id, 'calendar_id' => $calendar->id, 'gift_date' => '2026-12-07', 'available_at' => now()]);
+    $worker = app(DeliverMorningGiftAction::class);
+    expect($worker->execute($staleJob->id, true))->toBe(60);
+    Carbon::setTestNow('2026-12-08 07:00:00 UTC');
+    Artisan::call('calendar:morning');
+    todayDeliveryWorker();
+    expect($staleJob->refresh()->status)->toBe('expired')
+        ->and(WidgetMessage::query()->sole()->gift_date)->toBe('2026-12-08');
 });

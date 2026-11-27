@@ -45,6 +45,7 @@ final class PostgresMorningDeliveryRepository implements MorningDeliveryReposito
             ->where('g.date', $date)->whereNotNull('c.published_at')->whereNull('u.bot_blocked_at')
             ->where('c.claimed_at', '<=', $receivedBy->utc())
             ->when($viewerId !== null, fn (Builder $q) => $q->where('u.id', $viewerId))
+            ->whereNotExists($this->waitingCovers($date)->whereColumn('calendar_id', 'c.id'))
             ->whereNotExists(fn (Builder $q) => $q->from('morning_deliveries as d')->whereColumn('d.recipient_id', 'u.id')->where('d.gift_date', $date))
             ->select('c.id', 'c.recipient_id', 'g.date')->selectRaw('?::timestamp,?::timestamp,?::timestamp', [now(), now(), now()]);
         DB::table('morning_deliveries')->insertOrIgnoreUsing(
@@ -76,6 +77,16 @@ final class PostgresMorningDeliveryRepository implements MorningDeliveryReposito
         $row = MorningDelivery::query()->where('status', 'pending')->find($id);
 
         return $row === null ? null : new MorningDeliveryDTO($row->recipient_id, $row->calendar_id, $row->gift_date, $row->available_at);
+    }
+
+    public function waitsForCover(MorningDeliveryDTO $delivery): bool
+    {
+        return $this->waitingCovers($delivery->giftDate)->where('calendar_id', $delivery->calendarId)->exists();
+    }
+
+    private function waitingCovers(string $date): Builder
+    {
+        return DB::table('telegram_cover_waits')->where('gift_date', $date);
     }
 
     /** {@inheritDoc} */

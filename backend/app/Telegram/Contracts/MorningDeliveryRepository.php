@@ -25,6 +25,9 @@ interface MorningDeliveryRepository
     /** Загружает адресата и дату ожидающей отправки. */
     public function pending(int $id): ?MorningDeliveryDTO;
 
+    /** Активно ли ожидание подтверждения открытки в день вручения. */
+    public function waitsForCover(MorningDeliveryDTO $delivery): bool;
+
     /** Завершает невыполненную отправку после смены даты. */
     public function expire(int $id): void;
 

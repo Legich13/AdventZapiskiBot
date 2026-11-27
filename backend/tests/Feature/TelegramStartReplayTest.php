@@ -35,6 +35,7 @@ function concurrentStartReplay(int $updateId, int $viewerId): Closure
 }
 
 test('повтор старого старта продолжает отправку исходных календарей и сохраняет нового владельца ника', function (): void {
+    Carbon::setTestNow('2026-11-27 12:00:00 UTC');
     config(['services.telegram.webhook_secret' => 'replay-test']);
     withHeader('X-Telegram-Bot-Api-Secret-Token', 'replay-test');
     $start = static fn (int $update, int $viewer) => postJson('/telegram/webhook', [
@@ -46,10 +47,8 @@ test('повтор старого старта продолжает отправ
     ]);
     $original = $waiting('2026-12-01');
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->once()->with(301);
-    $gateway->shouldReceive('welcome')->twice()->with(302);
-    $gateway->shouldReceive('sendWidget')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 2]));
-    $gateway->shouldReceive('sendWidget')->andReturn(500, 501, 502, 503);
+    $gateway->shouldReceive('send')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 2]));
+    $gateway->shouldReceive('send')->andReturn(500, 501, 502, 503);
 
     $start(1001, 301)->assertStatus(503)->assertHeader('Retry-After', '2');
     expect($original->refresh()->recipient_id)->toBe(301);
@@ -58,6 +57,7 @@ test('повтор старого старта продолжает отправ
     Calendar::factory()->create(['recipient_id' => 301, 'month' => '2027-02-01', 'published_at' => now(), 'claimed_at' => now()]);
     TelegramUser::whereKey(301)->update(['bot_blocked_at' => now()]);
 
+    Carbon::setTestNow(now()->addSeconds(2));
     $start(1001, 301)->assertNoContent();
     expect($forNewOwner->refresh()->recipient_id)->toBeNull()
         ->and(TelegramUser::findOrFail(302)->username)->toBe('snowbird')
@@ -69,33 +69,39 @@ test('повтор старого старта продолжает отправ
     expect(WidgetMessage::where('recipient_id', 301)->count())->toBe(1);
     $start(1003, 302)->assertNoContent();
     expect($forNewOwner->refresh()->recipient_id)->toBe(302);
+    Carbon::setTestNow();
 });
 
 test('параллельный процесс ждёт незавершённую отправку и два подтверждённых отказа допускают продолжение', function (): void {
+    Carbon::setTestNow('2026-11-27 12:00:00 UTC');
     config(['cache.default' => 'database']);
     $command = new StartUpdateDTO(889007, 889003, 'winterbird');
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->once()->ordered()->andReturnUsing(static function () use ($command): never {
+    $gateway->shouldReceive('send')->once()->ordered()->andReturnUsing(static function () use ($command): never {
         expect(Concurrency::run([concurrentStartReplay($command->updateId, $command->viewerId)]))->toBe([3]);
 
         throw new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 4]);
     });
-    $gateway->shouldReceive('welcome')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 8]));
-    $gateway->shouldReceive('welcome')->once()->ordered()->andReturnNull();
+    $gateway->shouldReceive('send')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 8]));
+    $gateway->shouldReceive('send')->once()->ordered()->andReturnNull();
 
     // Дочерний процесс подключается отдельно и должен видеть зафиксированный журнал.
     $connection = DB::connection();
     $connection->commit();
     try {
         $handle = app(HandleTelegramUpdateAction::class);
-        expect($handle->execute($command))->toBe(4)
-            ->and($handle->execute($command))->toBe(8)
-            ->and($handle->execute($command))->toBeNull()
+        expect($handle->execute($command))->toBe(4);
+        Carbon::setTestNow(now()->addSeconds(4));
+        expect($handle->execute($command))->toBe(8);
+        Carbon::setTestNow(now()->addSeconds(8));
+        expect($handle->execute($command))->toBeNull()
             ->and($handle->execute($command))->toBeNull();
     } finally {
         DB::table('telegram_start_updates')->where('update_id', $command->updateId)->delete();
+        WidgetMessage::where('recipient_id', $command->viewerId)->delete();
         TelegramUser::whereKey($command->viewerId)->delete();
         RateLimiter::clear('telegram-start-user:'.$command->viewerId);
         $connection->beginTransaction();
+        Carbon::setTestNow();
     }
 });

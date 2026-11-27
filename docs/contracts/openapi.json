@@ -50,12 +50,16 @@
                     },
                     "401": {
                         "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    },
+                    "419": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 CSRF-\u0442\u043e\u043a\u0435\u043d."
                     }
                 },
                 "security": [
                     {
                         "editorSession": [],
-                        "csrf": []
+                        "csrf": [],
+                        "miniAppLaunch": []
                     }
                 ]
             }
@@ -110,6 +114,9 @@
                     "401": {
                         "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
                     },
+                    "419": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 CSRF-\u0442\u043e\u043a\u0435\u043d."
+                    },
                     "409": {
                         "description": "\u041c\u0435\u0441\u044f\u0446 \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044f \u0443\u0436\u0435 \u0437\u0430\u043d\u044f\u0442."
                     }
@@ -117,7 +124,8 @@
                 "security": [
                     {
                         "editorSession": [],
-                        "csrf": []
+                        "csrf": [],
+                        "miniAppLaunch": []
                     }
                 ]
             }
@@ -162,6 +170,9 @@
                     "401": {
                         "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
                     },
+                    "419": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 CSRF-\u0442\u043e\u043a\u0435\u043d."
+                    },
                     "409": {
                         "description": "\u041c\u0435\u0441\u044f\u0446 \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044f \u0443\u0436\u0435 \u0437\u0430\u043d\u044f\u0442."
                     }
@@ -169,7 +180,8 @@
                 "security": [
                     {
                         "editorSession": [],
-                        "csrf": []
+                        "csrf": [],
+                        "miniAppLaunch": []
                     }
                 ]
             }
@@ -177,7 +189,7 @@
         "/app/session": {
             "post": {
                 "operationId": "miniAppSession",
-                "summary": "\u0412\u043e\u0439\u0442\u0438 \u0432 \u0440\u0435\u0434\u0430\u043a\u0442\u043e\u0440 \u0447\u0435\u0440\u0435\u0437 Telegram",
+                "summary": "\u0412\u043e\u0439\u0442\u0438 \u0432 Mini App \u0447\u0435\u0440\u0435\u0437 Telegram",
                 "tags": [
                     "MiniAppSession"
                 ],
@@ -203,11 +215,75 @@
                     },
                     "401": {
                         "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    },
+                    "419": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 CSRF-\u0442\u043e\u043a\u0435\u043d."
                     }
                 },
                 "security": [
                     {
                         "csrf": []
+                    }
+                ]
+            }
+        },
+        "/app/received/{calendar}/{date}/open": {
+            "post": {
+                "operationId": "openReceivedGift",
+                "summary": "\u041e\u0442\u043a\u0440\u044b\u0442\u044c \u0438\u043b\u0438 \u043f\u0435\u0440\u0435\u0447\u0438\u0442\u0430\u0442\u044c \u0437\u0430\u043f\u0438\u0441\u043a\u0443 \u0437\u0430 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u0443\u044e \u0434\u0430\u0442\u0443",
+                "tags": [
+                    "ReceivedCalendar"
+                ],
+                "parameters": [
+                    {
+                        "name": "calendar",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`OpenedGiftResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OpenedGiftResource"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "\u041b\u0438\u043c\u0438\u0442 \u0447\u0430\u0441\u0442\u043e\u0442\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432 \u0438\u0441\u0447\u0435\u0440\u043f\u0430\u043d."
+                    },
+                    "401": {
+                        "description": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0451\u043d\u043d\u0430\u044f \u0441\u0435\u0441\u0441\u0438\u044f Mini App \u0438\u043b\u0438 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u044c\u043d\u0430\u044f \u043f\u043e\u0434\u043f\u0438\u0441\u044c Telegram."
+                    },
+                    "419": {
+                        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0443, \u0447\u0442\u043e\u0431\u044b \u043f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0435\u0439\u0441\u0442\u0432\u0443\u044e\u0449\u0438\u0439 CSRF-\u0442\u043e\u043a\u0435\u043d."
+                    },
+                    "403": {
+                        "description": "\u041a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u044c \u043d\u0435 \u0432\u0440\u0443\u0447\u0451\u043d \u044d\u0442\u043e\u043c\u0443 \u043f\u043e\u043b\u0443\u0447\u0430\u0442\u0435\u043b\u044e \u0438\u043b\u0438 \u0434\u0430\u0442\u0430 \u0435\u0449\u0451 \u043d\u0435 \u043d\u0430\u0441\u0442\u0443\u043f\u0438\u043b\u0430."
+                    },
+                    "404": {
+                        "description": "\u0414\u0430\u0442\u0430 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442 \u0432 \u043a\u0430\u043b\u0435\u043d\u0434\u0430\u0440\u0435."
+                    }
+                },
+                "security": [
+                    {
+                        "editorSession": [],
+                        "csrf": [],
+                        "miniAppLaunch": []
                     }
                 ]
             }
@@ -270,6 +346,11 @@
                 "in": "header",
                 "name": "X-CSRF-TOKEN"
             },
+            "miniAppLaunch": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "X-Mini-App-Launch"
+            },
             "telegramWebhook": {
                 "type": "apiKey",
                 "in": "header",
@@ -301,6 +382,22 @@
                     "initData"
                 ],
                 "title": "MiniAppLoginRequest"
+            },
+            "OpenedGiftResource": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string"
+                    },
+                    "first": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "text",
+                    "first"
+                ],
+                "title": "OpenedGiftResource"
             },
             "SaveCalendarRequest": {
                 "anyOf": [

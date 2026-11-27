@@ -13,11 +13,6 @@ final readonly class WidgetRenderer
 {
     public function __construct(private WidgetRepository $messages) {}
 
-    public function renderWelcome(string $launchUrl): RenderedWidgetDTO
-    {
-        return new RenderedWidgetDTO(view('widgets.welcome', compact('launchUrl'))->render(), '');
-    }
-
     public function render(int $viewerId, int $calendarId, ?string $giftDate): RenderedWidgetDTO
     {
         $state = $this->messages->stateForRecipient($viewerId, $calendarId, GiftClock::now('Europe/Moscow')->toDateString());

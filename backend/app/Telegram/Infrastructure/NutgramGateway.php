@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Telegram\Infrastructure;
 
-use App\Telegram\Services\WidgetRenderer;
+use App\Telegram\DTO\BotMessageDTO;
 use SergiX44\Nutgram\Nutgram;
+use SergiX44\Nutgram\Telegram\Types\Internal\InputFile;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardButton;
+use SergiX44\Nutgram\Telegram\Types\Keyboard\InlineKeyboardMarkup;
+use SergiX44\Nutgram\Telegram\Types\WebApp\WebAppInfo;
 
 class NutgramGateway
 {
@@ -14,23 +18,28 @@ class NutgramGateway
         return app()->environment('local', 'testing');
     }
 
-    public function sendWidget(int $recipient, string $html, string $caption): ?int
+    public function send(int $recipient, BotMessageDTO $content): ?int
     {
         if ($this->simulated()) {
             return null;
         }
 
-        $message = app(Nutgram::class)->sendWidget(html: $html, chat_id: $recipient, caption: $caption, allow_queries: true);
-
-        return $message->message_id ?? throw new \RuntimeException('Telegram не подтвердил отправку виджета.');
-    }
-
-    public function welcome(int $recipient): void
-    {
-        if (! $this->simulated()) {
-            $widget = app(WidgetRenderer::class)->renderWelcome(config()->string('services.telegram.mini_app_url'));
-            app(Nutgram::class)->sendWidget(html: $widget->html, chat_id: $recipient, caption: $widget->caption, allow_queries: false);
+        $url = rtrim(config()->string('app.url'), '/').$content->appPath;
+        $keyboard = InlineKeyboardMarkup::make()->addRow(InlineKeyboardButton::make(
+            $content->button, web_app: WebAppInfo::make($url),
+        ));
+        $bot = app(Nutgram::class);
+        if ($content->photo === null) {
+            $message = $bot->sendMessage($content->text, chat_id: $recipient, reply_markup: $keyboard);
+        } else {
+            $stream = @fopen(public_path(ltrim($content->photo, '/')), 'rb');
+            if ($stream === false) {
+                throw new PhotoPreparationException('Не удалось открыть обложку календаря.');
+            }
+            $message = $bot->sendPhoto(InputFile::make($stream, basename($content->photo)), chat_id: $recipient, caption: $content->text, reply_markup: $keyboard);
         }
+
+        return $message->message_id ?? throw new \RuntimeException('Telegram не подтвердил отправку сообщения.');
     }
 
     public function answer(string $query, string $result): void

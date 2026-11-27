@@ -31,7 +31,7 @@ test('редактор закрепляет адрес по Telegram ID до в�
         'recipient_id' => $recipient->id, 'recipient_username' => 'december_reader',
         'is_self' => false, 'published_at' => now(),
     ]);
-    $page = withSession(['telegram_id' => $calendar->author_id])->get('/app?calendar='.$calendar->id)->assertOk();
+    $page = asMiniAppViewer($calendar->author_id)->get('/app?calendar='.$calendar->id)->assertOk();
     $field = 'id="username"[^>]*';
     expect($page->getContent())->toMatch('/<input '.$field.'\bdisabled\b/');
     $page->assertSee('Получатель закреплён по Telegram ID');
@@ -49,44 +49,26 @@ test('локальная мастерская показывает календ�
     get('/dev')->assertOk()->assertSee('Мастерская');
     post('/dev/session', ['telegram_id' => 90001, 'time' => '2026-12-07T09:59'])->assertRedirect();
     get('/dev')->assertOk()->assertSee('Запустить утреннюю рассылку');
-    get('/app')->assertOk()->assertSee('Для кого')->assertSee('Опубликовать');
+    get('/app?create=1')->assertOk()->assertSee('Для кого')->assertSee('Опубликовать');
     post('/dev/session', ['telegram_id' => 90002, 'time' => '2026-12-07T10:00'])->assertRedirect();
     post('/dev/start')->assertRedirect();
     post('/dev/morning')->assertRedirect();
     post('/dev/morning')->assertRedirect();
     expect(DB::table('morning_deliveries')->where('recipient_id', 90002)->count())->toBe(1);
-    $card = DB::table('widget_messages')->where('recipient_id', 90002)->whereNotNull('gift_date')->value('id');
-    if (! is_int($card)) {
-        throw new UnexpectedValueException('Карточка должна иметь числовой ID.');
-    }
-    get('/dev/widget/'.$card)->assertOk()->assertSee('TelegramWidget')->assertDontSee('Сегодня мы печём');
+    $path = DB::table('widget_messages')->where('recipient_id', 90002)->whereNotNull('gift_date')->sole()->app_path;
+    assert(is_string($path));
+    get('/dev')->assertOk()->assertSee($path)->assertSee('К подарку')->assertDontSee('Сегодня мы печём');
     post('/dev/session', ['telegram_id' => 90001, 'time' => '2026-12-07T10:05'])->assertRedirect();
-    get('/dev/widget/'.$card)->assertForbidden();
+    get('/dev')->assertOk()->assertDontSee($path);
 });
 
-test('мастерская показывает приветственный виджет выбранному профилю без календарных сообщений', function (): void {
+test('мастерская показывает обычные сообщения только после отправки и ведёт той же кнопкой в приложение', function (): void {
     app()->detectEnvironment(fn () => 'local');
-    get('/dev')->assertOk()->assertDontSee('Приветствие бота');
     $viewer = TelegramUser::factory()->create(['id' => 90001]);
-
-    $response = withSession(['telegram_id' => $viewer->id])->get('/dev')->assertOk();
-
-    $response->assertSee('Приветствие бота')->assertSee('Полученных календарей пока нет.');
-    $document = new DOMDocument;
-    $document->loadHTML('<?xml encoding="UTF-8">'.$response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
-    $xpath = new DOMXPath($document);
-    $html = $xpath->evaluate('string(//iframe[@title="Приветствие бота"]/@srcdoc)');
-    expect($html)->toBeString();
-    assert(is_string($html));
-    $preview = new DOMDocument;
-    $preview->loadHTML('<?xml encoding="UTF-8">'.$html, LIBXML_NOERROR | LIBXML_NOWARNING);
-    $card = new DOMXPath($preview);
-
-    expect($card->evaluate('normalize-space(//h1)'))->toBe('Маленькие чудеса каждый день')
-        ->and($card->evaluate('string(//a/@href)'))->toBe(url('/app'))
-        ->and($card->evaluate('string(//a/@target)'))->toBe('_top')
-        ->and($card->evaluate('normalize-space(//a)'))->toBe('Создать календарь')
-        ->and(DB::table('widget_messages')->count())->toBe(0);
+    withSession(['telegram_id' => $viewer->id])->get('/dev')->assertOk()->assertDontSee('Приветствие бота')->assertDontSee('/app?create=1');
+    post('/dev/start')->assertRedirect('/dev');
+    get('/dev')->assertOk()->assertSee('/app?create=1')->assertSee('Создать календарь')->assertDontSee('<iframe', false);
+    expect(DB::table('widget_messages')->where('recipient_id', $viewer->id)->count())->toBe(1);
 });
 
 test('производственная среда закрывает локальную мастерскую при смене окружения', function () {

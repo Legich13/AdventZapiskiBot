@@ -11,20 +11,19 @@ use App\Models\WidgetMessage;
 use App\Telegram\Actions\AnswerWidgetAction;
 use App\Telegram\Actions\DeliverMorningGiftAction;
 use App\Telegram\Actions\DispatchMorningRemindersAction;
-use App\Telegram\Actions\SendWidgetAction;
+use App\Telegram\DTO\BotMessageDTO;
 use App\Telegram\DTO\WidgetInboxItemDTO;
 use App\Telegram\Infrastructure\NutgramGateway;
 use App\Telegram\Services\MorningRateLimiter;
 use App\Telegram\Services\WidgetInboxService;
+use App\Telegram\Services\WidgetRenderer;
 use Carbon\Carbon;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Queue\Jobs\DatabaseJob;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Facades\View;
 
 use function Pest\Laravel\mock;
 use function Pest\Laravel\postJson;
@@ -67,6 +66,17 @@ function widgetCalendar(int $recipient = 101, string $claim = '2026-12-01 00:00:
     return $calendar;
 }
 
+/** Сообщение, доставленное прежней версией бота. */
+function legacyWidget(int $viewer, int $calendar, ?string $date = null): int
+{
+    $widget = app(WidgetRenderer::class)->render($viewer, $calendar, $date);
+
+    return WidgetMessage::query()->create([
+        'recipient_id' => $viewer, 'calendar_id' => $calendar, 'gift_date' => $date,
+        'html' => $widget->html, 'caption' => $widget->caption,
+    ])->id;
+}
+
 beforeEach(function () {
     widgetTime('2026-12-07 10:00:00');
     config(['queue.default' => 'sync']);
@@ -87,8 +97,8 @@ test('рассылка в десять часов создаёт одну кар
     expect(Artisan::call('calendar:morning'))->toBe(0);
     $messages = WidgetMessage::query()->orderBy('recipient_id')->get();
     expect($messages)->toHaveCount(2)
-        ->and($messages->firstOrFail()->html)->toContain('Открыть подарок')
-        ->and($messages->sole('recipient_id', 102)->html)->toContain('Посмотреть ещё раз')
+        ->and($messages->firstOrFail()->button_text)->toBe('К подарку')
+        ->and($messages->sole('recipient_id', 102)->button_text)->toBe('Посмотреть ещё раз')
         ->and($messages->firstOrFail()->html.$messages->firstOrFail()->caption)->not->toContain('Секретная записка')
         ->and(DB::table('morning_deliveries')->where('status', 'sent')->count())->toBe(2);
     widgetTime('2026-12-09 10:01:00');
@@ -99,9 +109,8 @@ test('рассылка в десять часов создаёт одну кар
 test('основной и утренний виджеты разделяют открытие, даты и авторизацию', function () {
     $calendar = widgetCalendar();
     $widgets = app(AnswerWidgetAction::class);
-    $full = app(SendWidgetAction::class)->execute(101, $calendar);
-    app(DispatchMorningRemindersAction::class)->execute();
-    $morning = WidgetMessage::query()->whereNotNull('gift_date')->sole()->id;
+    $full = legacyWidget(101, $calendar);
+    $morning = legacyWidget(101, $calendar, '2026-12-07');
     $answer = fn (int $viewer, int $message, string $cmd) => json_decode($widgets->execute($viewer, $message, $cmd), true);
     expect($answer(102, $full, 'open:7'))->toHaveKey('error')
         ->and($answer(101, $full, 'open:8'))->toHaveKey('error')
@@ -129,7 +138,7 @@ test('неверный секрет webhook отклоняется до обра
 test('рассылка классифицирует явные отказы и неопределённую доставку', function (int $code, string $expected) {
     widgetCalendar();
     $error = $code === 0 ? new RuntimeException('connection lost') : new TelegramException('Telegram', $code, parameters: ['retry_after' => 37]);
-    mock(NutgramGateway::class)->shouldReceive('sendWidget')->once()->andThrow($error);
+    mock(NutgramGateway::class)->shouldReceive('send')->once()->andThrow($error);
     app(DispatchMorningRemindersAction::class)->execute();
     $delivery = MorningDelivery::query()->sole();
     expect($delivery->status)->toBe($expected);
@@ -157,7 +166,7 @@ test('после рестарта просроченная отправка с �
 test('интерактивные запросы ограничены отдельно для каждого получателя', function () {
     $id = widgetCalendar();
     $widgets = app(AnswerWidgetAction::class);
-    $message = app(SendWidgetAction::class)->execute(101, $id);
+    $message = legacyWidget(101, $id);
     for ($tap = 0; $tap < 5; $tap++) {
         expect(json_decode($widgets->execute(101, $message, 'state'), true))->toHaveKey('days');
     }
@@ -169,7 +178,7 @@ test('в мастерской лимит нажатий сбрасывается
     config(['cache.default' => 'database', 'cache.limiter' => 'database']);
     widgetTime('2026-11-26 12:00:00');
     $calendar = widgetCalendar(90002);
-    $message = app(SendWidgetAction::class)->execute(90002, $calendar);
+    $message = legacyWidget(90002, $calendar);
     withHeader('Sec-Fetch-Site', 'same-origin');
     withSession(['telegram_id' => 90002, 'dev_time' => '2026-12-07T10:00']);
     $request = static function (string $command) use ($message): array {
@@ -194,7 +203,7 @@ test('в мастерской лимит нажатий сбрасывается
 test('команда старта даёт кнопку редактора, а повтор одного обновления не дублирует приветствие', function () {
     config(['services.telegram.webhook_secret' => 'winter-test']);
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->once()->with(8001);
+    $gateway->shouldReceive('send')->once()->with(8001, Mockery::type(BotMessageDTO::class))->andReturn(301);
     $command = ['update_id' => 98, 'message' => [
         'message_id' => 3, 'chat' => ['id' => 8001, 'type' => 'private'],
         'from' => ['id' => 8001, 'username' => 'winter8001'], 'text' => '/start',
@@ -219,7 +228,7 @@ test('задержанное задание со вчерашней датой �
 test('виджет в личном чате сверяет отправителя, чат и номер сообщения', function () {
     config(['services.telegram.webhook_secret' => 'winter-test']);
     $calendar = widgetCalendar();
-    $id = app(SendWidgetAction::class)->execute(101, $calendar);
+    $id = legacyWidget(101, $calendar);
     DB::table('widget_messages')->where('id', $id)->update(['telegram_message_id' => 56]);
     $gateway = mock(NutgramGateway::class);
     $gateway->shouldReceive('answer')->once()->withArgs(fn (string $query, string $data): bool => $query === 'q1' && array_key_exists('error', widgetReply($data)));
@@ -237,7 +246,7 @@ test('полный декабрь с 31 подарком укладываетс�
     for ($day = 1; $day <= 31; $day++) {
         DB::table('gift_days')->updateOrInsert(['calendar_id' => $calendar, 'date' => sprintf('2026-12-%02d', $day)], ['text' => str_repeat('✨', 200)]);
     }
-    $message = app(SendWidgetAction::class)->execute(101, $calendar);
+    $message = legacyWidget(101, $calendar);
     $html = WidgetMessage::query()->findOrFail($message)->html;
     assert(is_string($html));
     expect(strlen(gzcompress($html, 9) ?: throw new RuntimeException('Ошибка zlib')))->toBeLessThanOrEqual(4096);
@@ -246,8 +255,8 @@ test('полный декабрь с 31 подарком укладываетс�
 test('после указанного Telegram интервала разрешённая повторная попытка доставляет одну карточку', function () {
     widgetCalendar();
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('sendWidget')->once()->ordered()->andThrow(new TelegramException('Too many', 429, parameters: ['retry_after' => 37]));
-    $gateway->shouldReceive('sendWidget')->once()->ordered()->andReturn(1010);
+    $gateway->shouldReceive('send')->once()->ordered()->andThrow(new TelegramException('Too many', 429, parameters: ['retry_after' => 37]));
+    $gateway->shouldReceive('send')->once()->ordered()->andReturn(1010);
     app(DispatchMorningRemindersAction::class)->execute();
     widgetTime('2026-12-07 10:00:36');
     app(DispatchMorningRemindersAction::class)->execute();
@@ -259,7 +268,7 @@ test('после указанного Telegram интервала разрешё
         ->and(DB::table('widget_messages')->value('telegram_message_id'))->toBe(1010);
 });
 
-test('Nutgram формирует запросы для нативного виджета, кнопки Mini App и ответа на открытие', function () {
+test('Nutgram отвечает на нажатие ранее отправленного виджета', function () {
     $sdk = Nutgram::fake();
     app()->instance(Nutgram::class, $sdk);
     $gateway = new class extends NutgramGateway
@@ -269,14 +278,9 @@ test('Nutgram формирует запросы для нативного вид
             return false;
         }
     };
-    $message = ['message_id' => 7, 'date' => now()->timestamp, 'chat' => ['id' => 101, 'type' => 'private']];
-    $sdk->willReceive($message)->willReceive($message)->willReceive(true);
-    expect($gateway->sendWidget(101, '<b>✦</b>', 'Доброе утро'))->toBe(7);
-    $gateway->welcome(101);
+    $sdk->willReceive(true);
     $gateway->answer('q1', 'записка');
-    $sdk->assertReply('sendWidget', ['html' => '<b>✦</b>', 'chat_id' => 101, 'caption' => 'Доброе утро', 'allow_queries' => true], 0)
-        ->assertReply('sendWidget', ['chat_id' => 101, 'caption' => '', 'allow_queries' => false], 1)
-        ->assertReply('answerWidgetQuery', ['widget_query_id' => 'q1', 'data' => 'записка'], 2);
+    $sdk->assertReply('answerWidgetQuery', ['widget_query_id' => 'q1', 'data' => 'записка']);
 });
 
 test('рабочее задание перепланируется через retry_after с сохранением места в очереди', function () {
@@ -284,7 +288,7 @@ test('рабочее задание перепланируется через re
     Queue::fake();
     app(DispatchMorningRemindersAction::class)->execute();
     $id = MorningDelivery::query()->sole()->id;
-    mock(NutgramGateway::class)->shouldReceive('sendWidget')->once()->andThrow(new TelegramException('Too many', 429, parameters: ['retry_after' => 9]));
+    mock(NutgramGateway::class)->shouldReceive('send')->once()->andThrow(new TelegramException('Too many', 429, parameters: ['retry_after' => 9]));
     $job = new SendMorningGift($id);
     $workerJob = Mockery::mock(DatabaseJob::class);
     $workerJob->shouldReceive('release')->once()->with(9);
@@ -298,9 +302,8 @@ test('повтор стартового обновления после подт
     config(['services.telegram.webhook_secret' => 'winter-test', 'queue.default' => 'database']);
     widgetCalendar();
     $gateway = mock(NutgramGateway::class);
-    $gateway->shouldReceive('welcome')->once()->with(101);
-    $gateway->shouldReceive('sendWidget')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 1]));
-    $gateway->shouldReceive('sendWidget')->once()->ordered()->andReturn(301);
+    $gateway->shouldReceive('send')->once()->ordered()->andThrow(new TelegramException('Too Many Requests', 429, parameters: ['retry_after' => 1]));
+    $gateway->shouldReceive('send')->once()->ordered()->andReturn(301);
     $command = ['update_id' => 765, 'message' => ['chat' => ['id' => 101, 'type' => 'private'], 'from' => ['id' => 101, 'username' => 'winter101'], 'text' => '/start']];
     withHeader('X-Telegram-Bot-Api-Secret-Token', 'winter-test');
     postJson('/telegram/webhook', $command)->assertServerError();
@@ -318,7 +321,7 @@ test('webhook проверяет структуру запроса виджет�
 
 test('превью выдаёт типизированную ленту и HTML только владельцу сообщения', function () {
     $calendar = widgetCalendar();
-    $message = app(SendWidgetAction::class)->execute(101, $calendar);
+    $message = legacyWidget(101, $calendar);
     $inbox = app(WidgetInboxService::class);
     expect($inbox->forViewer(101)->sole())->toBeInstanceOf(WidgetInboxItemDTO::class)
         ->and($inbox->forViewer(null))->toBeEmpty()
@@ -344,17 +347,19 @@ test('фабрики сообщений и доставок создают св�
         ->and($delivery->recipient_id)->toBe($delivery->calendar?->recipient_id);
 });
 
-test('сбой подготовки HTML до обращения в Telegram оставляет доставку доступной для повтора', function (): void {
+test('сбой чтения календаря до обращения в Telegram оставляет доставку доступной для повтора', function (): void {
     widgetCalendar();
     Queue::fake();
     app(DispatchMorningRemindersAction::class)->execute();
     $delivery = MorningDelivery::query()->sole();
-    View::composer('widgets.morning', static fn () => throw new RuntimeException('Временный сбой подготовки шаблона'));
-    mock(NutgramGateway::class)->shouldReceive('sendWidget')->once()->andReturn(551);
+    $calendar = Calendar::query()->findOrFail($delivery->calendar_id);
+    $claimed = $calendar->claimed_at;
+    $calendar->update(['claimed_at' => null]);
+    mock(NutgramGateway::class)->shouldReceive('send')->once()->andReturn(551);
     $action = app(DeliverMorningGiftAction::class);
-    expect(fn () => $action->execute($delivery->id, true))->toThrow(RuntimeException::class);
+    expect(fn () => $action->execute($delivery->id, true))->toThrow(HttpException::class);
     expect($delivery->refresh()->status)->toBe('pending');
-    Event::forget('composing: widgets.morning');
+    $calendar->update(['claimed_at' => $claimed]);
     $action->execute($delivery->id, true);
     expect($delivery->refresh()->status)->toBe('sent')
         ->and(WidgetMessage::query()->sole()->telegram_message_id)->toBe(551);
@@ -402,7 +407,7 @@ test('сбой фиксации принятой Telegram карточки от�
             throw new RuntimeException('Сбой локальной транзакции подтверждения');
         }
     });
-    mock(NutgramGateway::class)->shouldReceive('sendWidget')->once()->andReturn(557);
+    mock(NutgramGateway::class)->shouldReceive('send')->once()->andReturn(557);
     $send = app(DeliverMorningGiftAction::class);
     expect(fn () => $send->execute($delivery->id, true))->toThrow(RuntimeException::class);
     expect(WidgetMessage::query()->count())->toBe(0)
@@ -419,7 +424,7 @@ test('поздний подтверждённый ответ уточняет и
     $dispatch = app(DispatchMorningRemindersAction::class);
     $dispatch->execute();
     $delivery = MorningDelivery::query()->sole();
-    mock(NutgramGateway::class)->shouldReceive('sendWidget')->once()->andReturnUsing(static function () use ($dispatch): int {
+    mock(NutgramGateway::class)->shouldReceive('send')->once()->andReturnUsing(static function () use ($dispatch): int {
         widgetTime('2026-12-07 10:06:00');
         $dispatch->execute();
 

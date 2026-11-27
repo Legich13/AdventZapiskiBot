@@ -1,0 +1,355 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "telegram-welcome-widget-v4-fast-tdd",
+  "planRevision": 4,
+  "planSha256": "1c30b5ca16c55bd7df1cd4d9a2fde59368f2942e078b622e59166b670ff648e0",
+  "orchestratorId": "/root",
+  "overallState": "blocked",
+  "currentStage": "003",
+  "supersededBy": null,
+  "updatedAt": "2026-11-27T08:58:46Z",
+  "stages": [
+    {
+      "id": "000",
+      "state": "complete"
+    },
+    {
+      "id": "001",
+      "state": "complete"
+    },
+    {
+      "id": "002",
+      "state": "complete"
+    },
+    {
+      "id": "003",
+      "state": "blocked"
+    },
+    {
+      "id": "004",
+      "state": "pending"
+    },
+    {
+      "id": "005",
+      "state": "pending"
+    },
+    {
+      "id": "006",
+      "state": "pending"
+    },
+    {
+      "id": "007",
+      "state": "pending"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "state": "complete",
+      "executorId": "/root/app",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-001"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-002",
+      "state": "complete",
+      "executorId": "/root/bot",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-002"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-003",
+      "state": "complete",
+      "executorId": "/root/plan",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-003"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-004",
+      "state": "complete",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-BASELINE"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-005",
+      "state": "in_progress",
+      "executorId": "/root/bot",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "laravel:tdd-with-pest"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-RED-UPGRADE"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-006",
+      "state": "pending",
+      "executorId": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-007",
+      "state": "pending",
+      "executorId": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [],
+      "handoffEvidenceId": null
+    }
+  ],
+  "activeWriters": [],
+  "evidence": [
+    {
+      "id": "EVID-ANALYSIS-001",
+      "stage": "000",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-ANALYSIS-001.md",
+      "sha256": "ffca36450dc2c6a6ebaf957862f3a57bc249a6d2849f90480013ed9e9684e58f",
+      "command": "Сопоставить порядок сообщений, календарь и действия получателя при старом частичном вручении и повторном входе.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:35:39Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-002",
+      "stage": "000",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-ANALYSIS-002.md",
+      "sha256": "4fc462797a51117b1302df561762910408b7dbc34f567a79fe66672409104de0",
+      "command": "Сопоставить журнал /start, московский день вручения, очереди, подтверждённый ответ Telegram и потерю ответа.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:35:39Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-003",
+      "stage": "000",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-ANALYSIS-003.md",
+      "sha256": "685ae84c6c95cfa3f03e650cb751802f618eb960e898a5126080bdc55c536d3f",
+      "command": "Сверить три заключения v3, следы отправки, порядок старой очереди и форму неизменного пользовательского пути.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:35:39Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-BASELINE",
+      "stage": "001",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "baseline",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/baseline.sha256",
+      "sha256": "558c6fa747d44a701a013b4eed0a59373ef3605aade33b2f1b9f5ea8302bded7",
+      "command": "Сопоставить байты всех 71 файлов по SHA-256 манифеста v3 24e7aa4e и проверить отсутствие двух новых путей в рабочем дереве и исходном Git HEAD 29bc7c8.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:35:39Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-UPGRADE-BASELINE",
+      "stage": "001",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-QA-UPGRADE-BASELINE.md",
+      "sha256": "85d1a2f3942dc69b000114ef5781164d2192896349463749c51cc8d400011440",
+      "command": "Сверить применённые миграции и количество календарей, дат, открытий, сообщений и утренних доставок в локальной PostgreSQL до обновления.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:36:15Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-OPERATIONS-DOCS",
+      "stage": "002",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-QA-OPERATIONS-DOCS.md",
+      "sha256": "0c0325e820e572a66823264ae2a0397028e2eb12c1a77b420b53dff9242000fe",
+      "command": "make dev-docs-check",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:36:40Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-PRIOR-INTERFACE",
+      "stage": "002",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-QA-PRIOR-INTERFACE.md",
+      "sha256": "f72907b68921245be091e18588b69807c6a621ae0c3bdcf34a104304fb4e6784",
+      "command": "Сопоставить SHA-256 восьми браузерных файлов со снимком v3 и прочитать исходные результаты мобильной, iframe-проверки и восстановления 419.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:36:51Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-UPGRADE",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-RED-UPGRADE.md",
+      "sha256": "4168c9d81ba7300352dbdaab131238cd26e72ec8eac1d25b125b1708e41981bc",
+      "command": "make test-suite suite=TelegramStartUpgradeTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T08:43:23Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-SCOPE-WITHDRAWN",
+      "stage": "003",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-SCOPE-WITHDRAWN.md",
+      "sha256": "08b265680b869a7d4084bb0e605a7186538ca096bbb42f5287c2e8634335863b",
+      "command": "Зафиксировать прямое указание пользователя о состоянии нового бота и отозвать прежние критерии переноса.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:54:01Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-FILING-CORRECTION",
+      "stage": "003",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v4-fast-tdd/evidence/EVID-FILING-CORRECTION.md",
+      "sha256": "9f6f126315695dacc209b4f35b9db6a2fc5f26ebfce5825688c4879e93106cd1",
+      "command": "Сверить исходные хеши двух отклонённых вспомогательных записей и сохранить точную историю коррекции этапа.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T08:58:46Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    }
+  ],
+  "gateResults": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "state": "pending",
+      "evidenceId": null
+    },
+    {
+      "id": "GATE-QUALITY",
+      "state": "pending",
+      "evidenceId": null
+    }
+  ],
+  "snapshot": {
+    "state": "pending",
+    "round": 0,
+    "manifestPath": null,
+    "manifestSha256": null,
+    "bundleSha256": null
+  },
+  "reviews": [
+    {
+      "axisId": "REV-SECURITY-PRIVACY-DATA",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-ARCHITECTURE-API-PONYTAIL",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-SPEC-TDD-UX-A11Y",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BLOCK-001",
+      "taskId": null,
+      "reason": "Пользователь отозвал требование поддерживать прежний бот. Выполнение этой исторической ревизии прекращено. Для локального запуска нового бота действуют его актуальные критерии, 27.11.2026.",
+      "openedAt": "2026-11-27T08:54:01Z"
+    }
+  ]
+}

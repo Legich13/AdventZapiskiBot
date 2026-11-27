@@ -7,9 +7,9 @@ namespace App\Telegram\Actions;
 use App\Support\GiftClock;
 use App\Telegram\Contracts\MorningDeliveryRepository;
 use App\Telegram\Contracts\WidgetRepository;
+use App\Telegram\DTO\BotMessageDTO;
 use App\Telegram\Infrastructure\NutgramGateway;
 use App\Telegram\Services\MorningRateLimiter;
-use App\Telegram\Services\WidgetRenderer;
 use Illuminate\Support\Facades\DB;
 use SergiX44\Nutgram\Telegram\Exceptions\TelegramException;
 use Throwable;
@@ -18,7 +18,6 @@ final readonly class DeliverMorningGiftAction
 {
     public function __construct(
         private MorningDeliveryRepository $deliveries,
-        private WidgetRenderer $renderer,
         private NutgramGateway $gateway,
         private WidgetRepository $messages,
         private MorningRateLimiter $limit,
@@ -39,7 +38,15 @@ final readonly class DeliverMorningGiftAction
         if ($delivery->availableAt->isFuture()) {
             return max(1, (int) ceil(now()->diffInSeconds($delivery->availableAt)));
         }
-        $widget = $this->renderer->render($delivery->recipientId, $delivery->calendarId, $delivery->giftDate);
+        if ($this->deliveries->waitsForCover($delivery)) {
+            $this->deliveries->defer($id, now()->toImmutable()->addMinute(), $hasWorker, false);
+
+            return 60;
+        }
+        $state = $this->messages->stateForRecipient($delivery->recipientId, $delivery->calendarId, $delivery->giftDate);
+        abort_if($state === null, 403);
+        $day = (int) substr($delivery->giftDate, -2);
+        $message = BotMessageDTO::morning($delivery->calendarId, $delivery->giftDate, ($state->days[$day] ?? null) === 2);
         $wait = $this->limit->reserveSlot();
         if ($wait > 0) {
             $this->deliveries->defer($id, now()->toImmutable()->addSeconds($wait), $hasWorker, false);
@@ -50,7 +57,7 @@ final readonly class DeliverMorningGiftAction
             return null;
         }
         try {
-            $telegramId = $this->gateway->sendWidget($delivery->recipientId, $widget->html, $widget->caption);
+            $telegramId = $this->gateway->send($delivery->recipientId, $message);
         } catch (TelegramException $failure) {
             if ($failure->getCode() === 429) {
                 $retry = $failure->getParameter('retry_after');
@@ -80,9 +87,9 @@ final readonly class DeliverMorningGiftAction
 
             return null;
         }
-        DB::transaction(function () use ($id, $delivery, $widget, $telegramId): void {
-            $message = $this->messages->recordMessage($delivery->recipientId, $delivery->calendarId, $delivery->giftDate, $telegramId, $widget);
-            $this->deliveries->confirmSent($id, $message);
+        DB::transaction(function () use ($id, $delivery, $message, $telegramId): void {
+            $record = $this->messages->recordMessage($delivery->recipientId, $telegramId, $message);
+            $this->deliveries->confirmSent($id, $record);
         });
 
         return null;

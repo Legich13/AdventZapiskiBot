@@ -1,0 +1,718 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "telegram-welcome-widget-v2-fast-tdd",
+  "slug": "telegram-welcome-widget-v2",
+  "revision": 2,
+  "supersedes": "telegram-welcome-widget-fast-tdd",
+  "title": "Календари и записки в Mini App",
+  "goal": "Адресат получает обычную открытку и датированные уведомления, открывает нужную записку в Mini App и возвращается к месяцу.",
+  "createdAt": "2026-11-27T06:29:04Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-API-001",
+      "ARCH-API-002",
+      "ARCH-API-006",
+      "ARCH-AUTH-001",
+      "ARCH-AUTH-002",
+      "ARCH-AUTH-006",
+      "ARCH-BE-002",
+      "ARCH-BE-004",
+      "ARCH-BE-007",
+      "ARCH-BE-014",
+      "ARCH-BE-016",
+      "ARCH-BE-017",
+      "ARCH-BE-018",
+      "ARCH-CALENDAR-001",
+      "ARCH-CALENDAR-002",
+      "ARCH-DOC-002",
+      "ARCH-LOCAL-001",
+      "ARCH-MOD-001",
+      "ARCH-MOD-002",
+      "ARCH-PERF-003",
+      "ARCH-PLAN-001",
+      "ARCH-SRC-002",
+      "ARCH-TELEGRAM-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Перенос действующего дизайна и принятого пути вручения в Mini App, обычные Telegram-сообщения и проверка совместимости."
+    ],
+    "out": [
+      "Внешняя поставка, массовая пересылка и изменение времени или уникальности утренней доставки."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "functional",
+      "statement": "Календарь получателя.",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Кнопка открывает вручённый календарь или назначенную дату после проверки Telegram. Состояния дат видны заранее, текст отдаётся только адресату после открытия."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "statement": "Обычный чат бота.",
+      "acceptance": [
+        {
+          "id": "AC-002",
+          "statement": "Первое вручение приходит одной фотографией, обычный запуск и утреннее напоминание приходят текстом. Каждая кнопка ведёт в нужный экран."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Открытие и доставка.",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "Дата доступна с полуночи по Москве, первое открытие учитывается один раз. Планировщик, поздняя публикация, повторы, ограничения Telegram и старые карточки сохраняют свои правила."
+        }
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "type": "functional",
+      "statement": "Знакомое оформление и мастерская.",
+      "acceptance": [
+        {
+          "id": "AC-004",
+          "statement": "Гирлянда, винно-золотая палитра, состояния дат, коробка и её раскрытие сохраняются в приложении. В локальном чате видны те же сообщения с кликабельными ссылками."
+        }
+      ]
+    },
+    {
+      "id": "REQ-005",
+      "type": "constraint",
+      "statement": "Проверяемый выпуск.",
+      "acceptance": [
+        {
+          "id": "AC-005",
+          "statement": "Scramble описывает новые операции, инструкции показывают путь вручения и получателя, а вход автора, доступ к API и результаты доставки проверяются вместе."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Сценарии автора и получателя",
+      "objective": "Проследить вручение, прежний путь автора и переход к конкретной записке.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Сопоставить экран автора и права получателя с текущими операциями календаря.",
+          "expected": "Указаны раздельные роли, пригодные операции и точный переход к дате."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Маршруты сообщений и повторная доставка",
+      "objective": "Выявить путь каждого исходящего сообщения и влияние замены транспорта.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Проследить обработку /start и утреннюю доставку в транзакциях и транспортном адаптере.",
+          "expected": "Определены проверяемые границы, повторы, неопределённый результат и старые виджеты."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-002",
+        "AC-003"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "Проверки и переход с прежних версий",
+      "objective": "Определить риски приватности, состояний, повторов и подготовки к выпуску.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Сверить проверки входа, раскрытия записки и повторов после смены дня, аккаунта и транспорта.",
+          "expected": "Выделены пропущенные сценарии и граница между локальным доказательством и рабочим ботом."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "001",
+      "title": "Исходный снимок",
+      "objective": "Зафиксировать исходные файлы, новый перечень и ответственных.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "inspection",
+          "command": "Проверить назначение точных путей и их исходные SHA-256 по первоначальному чистому 29bc7c8.",
+          "expected": "Каждая аренда имеет исходные байты или MISSING."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "stage": "002",
+      "title": "Главная, календарь и записка",
+      "objective": "Показать месяцы, состояния дней, открытие и повторное чтение через зарегистрированную сессию.",
+      "agentRole": "calendar_ui",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-004"
+      ],
+      "ownedPaths": [
+        "backend/app/Calendar/Actions/OpenGiftAction.php",
+        "backend/app/Calendar/Contracts/CalendarRepository.php",
+        "backend/app/Calendar/DTO/RecipientPageDTO.php",
+        "backend/app/Calendar/Infrastructure/Persistence/PostgresCalendarRepository.php",
+        "backend/app/Calendar/Services/RecipientPageService.php",
+        "backend/app/Http/Controllers/Calendar/CalendarController.php",
+        "backend/app/Http/Controllers/Calendar/MiniAppSessionController.php",
+        "backend/app/Http/Controllers/Calendar/ReceivedCalendarController.php",
+        "backend/app/Http/Middleware/MiniAppLaunch.php",
+        "backend/app/Http/Requests/Calendar/EditorPageRequest.php",
+        "backend/app/Http/Resources/Calendar/OpenedGiftResource.php",
+        "backend/app/Policies/CalendarPolicy.php",
+        "backend/public/mini-app-launch.js",
+        "backend/public/studio.css",
+        "backend/public/studio.js",
+        "backend/resources/views/app.blade.php",
+        "backend/resources/views/launch.blade.php",
+        "backend/resources/views/received.blade.php",
+        "backend/routes/calendar.php",
+        "backend/tests/Feature/CalendarFlowTest.php",
+        "backend/tests/Feature/CalendarRecipientTest.php"
+      ],
+      "createPaths": [
+        "backend/app/Calendar/DTO/RecipientPageDTO.php",
+        "backend/app/Calendar/Services/RecipientPageService.php",
+        "backend/app/Http/Controllers/Calendar/ReceivedCalendarController.php",
+        "backend/app/Http/Middleware/MiniAppLaunch.php",
+        "backend/app/Http/Resources/Calendar/OpenedGiftResource.php",
+        "backend/public/mini-app-launch.js",
+        "backend/resources/views/launch.blade.php",
+        "backend/resources/views/received.blade.php",
+        "backend/tests/Feature/CalendarRecipientTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-005",
+          "kind": "tdd",
+          "command": "make test-suite suite=CalendarRecipient",
+          "expected": "Наличие личной главной, безопасного перехода и открытия одного дня переводит целевой тест из RED в GREEN."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Измерить целевое поведение на одном и том же входе до и после изменения.",
+          "expectedOutcome": "Есть диагностируемое падение, успех той же команды и целевая проверка после интеграции."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "stage": "002",
+      "title": "Сообщения бота и чат мастерской",
+      "objective": "Доставить одну открытку, компактные уведомления и воспроизводимый локальный чат.",
+      "agentRole": "telegram_studio",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-004"
+      ],
+      "ownedPaths": [
+        "backend/.env.example",
+        "backend/app/Calendar/Actions/ClaimCalendarsAction.php",
+        "backend/app/Calendar/DTO/ClaimedCalendarsDTO.php",
+        "backend/app/Http/Controllers/DevController.php",
+        "backend/app/Models/WidgetMessage.php",
+        "backend/app/Studio/Actions/StartPreviewChatAction.php",
+        "backend/app/Telegram/Actions/DeliverMorningGiftAction.php",
+        "backend/app/Telegram/Actions/HandleTelegramUpdateAction.php",
+        "backend/app/Telegram/Actions/PrepareStartUpdateAction.php",
+        "backend/app/Telegram/Actions/SendWidgetAction.php",
+        "backend/app/Telegram/Contracts/WidgetRepository.php",
+        "backend/app/Telegram/DTO/BotMessageDTO.php",
+        "backend/app/Telegram/DTO/WidgetInboxItemDTO.php",
+        "backend/app/Telegram/Infrastructure/NutgramGateway.php",
+        "backend/app/Telegram/Infrastructure/Persistence/EloquentWidgetRepository.php",
+        "backend/app/Telegram/Infrastructure/Persistence/PostgresStartUpdateRepository.php",
+        "backend/app/Telegram/Services/WidgetRenderer.php",
+        "backend/config/services.php",
+        "backend/database/migrations/2026_11_27_000001_support_bot_messages.php",
+        "backend/resources/views/dev.blade.php",
+        "backend/tests/Feature/StudioTest.php",
+        "backend/tests/Feature/TelegramReservedCalendarTest.php",
+        "backend/tests/Feature/TelegramStartReplayTest.php",
+        "backend/tests/Feature/TelegramTodayDeliveryTest.php",
+        "backend/tests/Feature/TelegramWelcomeWidgetTest.php",
+        "backend/tests/Feature/TelegramWidgetTest.php",
+        "backend/tests/Unit/Architecture/AdventArchitectureTest.php"
+      ],
+      "createPaths": [
+        "backend/app/Calendar/DTO/ClaimedCalendarsDTO.php",
+        "backend/app/Telegram/DTO/BotMessageDTO.php",
+        "backend/database/migrations/2026_11_27_000001_support_bot_messages.php"
+      ],
+      "deletePaths": [
+        "backend/app/Telegram/Actions/SendWidgetAction.php"
+      ],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-006",
+          "kind": "tdd",
+          "command": "make test-suite suite='TelegramWelcomeWidgetTest|StudioTest.*обычные сообщения'",
+          "expected": "Реальные команды библиотеки для текста и фото, кнопки и сообщения мастерской удовлетворяют новому контракту."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Измерить целевое поведение на одном и том же входе до и после изменения.",
+          "expectedOutcome": "Есть диагностируемое падение, успех той же команды и целевая проверка после интеграции."
+        }
+      ],
+      "requirementIds": [
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-002",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-007",
+      "stage": "002",
+      "title": "Контракт открытия и материалы выпуска",
+      "objective": "Согласовать защищённое открытие, экспорт Scramble, обложку для вручения и сценарии поддержки.",
+      "agentRole": "integration",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-004"
+      ],
+      "ownedPaths": [
+        "README.md",
+        "backend/app/Providers/ApiDocumentationServiceProvider.php",
+        "backend/public/images/calendar-cover.png",
+        "backend/tests/Feature/Documentation/DocumentationAccessTest.php",
+        "docs/INFRASTRUCTURE.md",
+        "docs/backend/API_CONTRACT.md",
+        "docs/backend/ARCHITECTURE.md",
+        "docs/backend/TESTING.md",
+        "docs/backend/calendar.md",
+        "docs/backend/domain-models.md",
+        "docs/backend/model-business-evidence.md",
+        "docs/backend/repositories.md",
+        "docs/backend/telegram.md",
+        "docs/contracts/openapi.json",
+        "docs/flows/morning-delivery.md",
+        "docs/flows/open-gift.md",
+        "docs/flows/publish-calendar.md",
+        "docs/flows/staff-support.md"
+      ],
+      "createPaths": [
+        "backend/public/images/calendar-cover.png"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-007",
+          "kind": "tdd",
+          "command": "make test-suite suite=DocumentationAccessTest",
+          "expected": "OpenAPI описывает доступ к выбранной записке, документация проходит контрактные проверки."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Измерить целевое поведение на одном и том же входе до и после изменения.",
+          "expectedOutcome": "Есть диагностируемое падение, успех той же команды и целевая проверка после интеграции."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-008",
+      "stage": "005",
+      "title": "Полная проверка",
+      "objective": "Подготовить манифест и проверить единое состояние приложения в контейнерах.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-005",
+        "TASK-006",
+        "TASK-007"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-008",
+          "kind": "inspection",
+          "command": "make quality",
+          "expected": "Код, контракты и все сценарии проходят полный quality."
+        },
+        {
+          "id": "CHECK-010",
+          "kind": "inspection",
+          "command": "make pre-commit",
+          "expected": "Diff, аудит зависимостей, маршруты и полный перечень планов проходят."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004",
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004",
+        "AC-005"
+      ]
+    },
+    {
+      "id": "TASK-009",
+      "stage": "007",
+      "title": "Передача результата",
+      "objective": "Свести проверки, результаты независимых ревью и сведения о реальном окружении.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-008"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-009",
+          "kind": "inspection",
+          "command": "Сверить готовый манифест с результатами проверок и перечислить фактически проверенные среды.",
+          "expected": "Состояние проекта и внешней проверки указаны раздельно."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "handoff"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-005"
+      ],
+      "acceptanceIds": [
+        "AC-005"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    }
+  ]
+}

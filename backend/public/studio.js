@@ -1,4 +1,5 @@
 const csrf = document.querySelector('meta[name="csrf-token"]').content;
+const launchProof = document.currentScript.launchProof;
 async function request(url, method, body) {
     const response = await fetch(url, {
         method,
@@ -6,9 +7,15 @@ async function request(url, method, body) {
             Accept: "application/json",
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": csrf,
+            ...(launchProof ? {"X-Mini-App-Launch": launchProof} : {}),
         },
         body: JSON.stringify(body),
     });
+    if ([401, 419].includes(response.status)) {
+        const error = new Error("Вход устарел. Откройте приложение заново.");
+        error.name = "MiniAppSessionExpired";
+        throw error;
+    }
     if (!response.ok) {
         const problem = await response.json().catch(() => ({}));
         throw new Error(
@@ -20,18 +27,24 @@ async function request(url, method, body) {
     return response.status === 204 ? null : response.json();
 }
 
-const signin = document.getElementById("signin");
-if (signin && window.Telegram?.WebApp?.initData) {
-    window.Telegram.WebApp.ready();
-    signin.textContent = "Открываем ваш календарь…";
-    request("/app/session", "POST", {
-        initData: window.Telegram.WebApp.initData,
-    })
-        .then(() => location.reload())
-        .catch(() => {
-            signin.textContent =
-                "Время входа истекло. Откройте редактор ещё раз из чата с ботом.";
-        });
+function showError(container, error, fallback) {
+    container.textContent = error.message || fallback;
+    if (error.name === "MiniAppSessionExpired") {
+        const link = document.createElement("a");
+        link.href = location.pathname + location.search;
+        link.textContent = "Войти снова";
+        container.append(" ", link);
+    }
+    container.hidden = false;
+}
+
+const monthGrid = document.querySelector(".month-grid");
+if (monthGrid) {
+    const refreshAfterMs = Number(monthGrid.dataset.refreshAfterMs);
+    const refresh = () => { if (!document.hidden) location.reload(); };
+    if (Number.isFinite(refreshAfterMs))
+        window.setTimeout(refresh, Math.max(1000, refreshAfterMs + 100));
+    document.addEventListener("visibilitychange", refresh);
 }
 
 const editor = document.getElementById("editor");
@@ -177,9 +190,34 @@ function setupEditor(form) {
                 );
             location.reload();
         } catch (error) {
-            feedback.textContent = error.message;
+            showError(feedback, error, "Не удалось сохранить. Попробуйте ещё раз.");
         } finally {
             saving = false;
         }
     };
+}
+
+const openGift = document.getElementById("open-gift");
+if (openGift) {
+    openGift.addEventListener("click", async () => {
+        if (openGift.disabled) return;
+        openGift.disabled = true;
+        const error = document.getElementById("gift-error");
+        error.hidden = true;
+        try {
+            const result = await request(openGift.dataset.url, "POST", {});
+            const note = document.getElementById("gift-note");
+            note.querySelector("p").textContent = result.text;
+            note.hidden = false;
+            const card = note.closest(".recipient-card");
+            card.classList.add("unwrapped");
+            card.classList.toggle("first-opening", result.first);
+            openGift.setAttribute("aria-hidden", "true");
+            openGift.querySelector(".unwrap-label").hidden = true;
+            note.focus();
+        } catch (failure) {
+            showError(error, failure, "Не удалось открыть подарок. Попробуйте ещё раз.");
+            openGift.disabled = false;
+        }
+    });
 }

@@ -21,8 +21,16 @@ interface CalendarRepository
 
     public function idByUsername(string $username): ?int;
 
+    public function hasAuthored(int $authorId): bool;
+
     /** @return list<CalendarDTO> */
     public function authored(int $authorId): array;
+
+    /** @return list<CalendarDTO> */
+    public function received(int $recipientId): array;
+
+    /** @return array<string,bool> Первое открытие каждой выбранной даты. */
+    public function openedDates(int $calendarId): array;
 
     public function calendar(int $id): ?CalendarDTO;
 

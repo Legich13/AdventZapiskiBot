@@ -13,6 +13,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
+use PHPUnit\Framework\Assert;
 use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
@@ -33,11 +34,34 @@ test('справочник проекта и контракт API открыва
         '/app/calendars' => ['post', 'saveCalendarDraft'],
         '/app/calendars/{calendar}' => ['put', 'updateCalendar'],
         '/app/calendars/{calendar}/publish' => ['post', 'publishCalendar'],
+        '/app/received/{calendar}/{date}/open' => ['post', 'openReceivedGift'],
         '/telegram/webhook' => ['post', 'receiveTelegramUpdate'],
     ] as $path => [$method, $operation]) {
         expect($result->json("paths.$path.$method.operationId"))->toBe($operation);
+        if (str_starts_with($path, '/app/') && $path !== '/app/session') {
+            $result->assertJsonPath("paths.$path.$method.security.0", ['editorSession' => [], 'csrf' => [], 'miniAppLaunch' => []]);
+        }
+    }
+    $result->assertJsonPath('components.securitySchemes.miniAppLaunch.name', 'X-Mini-App-Launch');
+    $gift = 'paths./app/received/{calendar}/{date}/open.post';
+    foreach ([200, 401, 403, 404, 429] as $status) {
+        expect($result->json($gift.'.responses.'.$status))->not->toBeNull();
     }
 });
+
+test('браузер получает cookie для встроенного календаря по HTTPS и для локальной мастерской по HTTP', function (string $origin, string $sameSite, bool $secure): void {
+    config(['app.url' => $origin]);
+    config(['session' => require config_path('session.php')]);
+    $cookie = get($origin.'/app')->assertOk()->getCookie(config()->string('session.cookie'), false);
+    Assert::assertNotNull($cookie);
+    expect($cookie->getSameSite())->toBe($sameSite)
+        ->and($cookie->isSecure())->toBe($secure)
+        ->and($cookie->isPartitioned())->toBe($secure)
+        ->and($cookie->isHttpOnly())->toBeTrue();
+})->with([
+    'Mini App в Telegram Web' => ['https://calendar.example.test', 'none', true],
+    'локальная мастерская' => ['http://localhost:8087', 'lax', false],
+]);
 
 test('администратор выдаёт и отзывает права на страницы через настоящую форму Shield', function (): void {
     $admin = User::factory()->create();
@@ -136,7 +160,7 @@ test('документация открывает опубликованные �
 
 test('документация отражает условные обязательные поля редактора и запроса виджета', function (): void {
     TelegramUser::factory()->create(['id' => 101]);
-    Pest\Laravel\withSession(['telegram_id' => 101])->postJson('/app/calendars', ['month' => '2027-01', 'target' => 'self', 'days' => []])->assertCreated();
+    asMiniAppViewer(101)->postJson('/app/calendars', ['month' => '2027-01', 'target' => 'self', 'days' => []])->assertCreated();
     Pest\Laravel\postJson('/app/calendars', ['month' => '2027-01', 'target' => 'username', 'days' => []])->assertUnprocessable()->assertJsonValidationErrors('username');
     config(['services.telegram.webhook_secret' => 'doc-test-secret']);
     Pest\Laravel\withHeader('X-Telegram-Bot-Api-Secret-Token', 'doc-test-secret')->postJson('/telegram/webhook', ['update_id' => 1])->assertNoContent();

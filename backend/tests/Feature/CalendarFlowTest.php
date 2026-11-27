@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\DB;
 use function Pest\Laravel\get;
 use function Pest\Laravel\postJson;
 use function Pest\Laravel\putJson;
-use function Pest\Laravel\withSession;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -84,7 +83,7 @@ test('редактор принимает подписанный вход и о�
 test('черновик можно опубликовать и вручить по текущему нику только одному пользователю', function () {
     $calendars = app(ClaimCalendarsAction::class);
     $calendars->execute(41, 'Author');
-    $id = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', calendarPayload())->assertSuccessful()->json('id'));
+    $id = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', calendarPayload())->assertSuccessful()->json('id'));
     expect($calendars->execute(42, 'Receiver'))->toHaveCount(0);
     postJson("/app/calendars/$id/publish")->assertSuccessful();
     expect($calendars->execute(42, 'RECEIVER'))->toBe([$id]);
@@ -97,7 +96,7 @@ test('черновик можно опубликовать и вручить п�
     expect(get_object_vars(app(OpenGiftAction::class)->execute(42, $id, '2026-12-07')))->toMatchArray(['text' => 'Под ёлкой ✨', 'first' => false]);
     expect(fn () => app(OpenGiftAction::class)->execute(43, $id, '2026-12-07'))->toThrow(HttpException::class);
 
-    withSession(['telegram_id' => 43])->putJson("/app/calendars/$id", calendarPayload())->assertForbidden();
+    asMiniAppViewer(43)->putJson("/app/calendars/$id", calendarPayload())->assertForbidden();
     get('/app?calendar='.$id)->assertForbidden();
 });
 
@@ -107,12 +106,12 @@ test('черновик с пустым выбранным днём сохран�
     $calendars->execute(45, 'Other');
     $payload = calendarPayload();
     $payload['days'][0]['text'] = '';
-    $id = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', $payload)->assertSuccessful()->json('id'));
+    $id = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', $payload)->assertSuccessful()->json('id'));
     postJson("/app/calendars/$id/publish")->assertUnprocessable();
     putJson("/app/calendars/$id", calendarPayload())->assertSuccessful();
-    $other = calendarResponseId(withSession(['telegram_id' => 45])->postJson('/app/calendars', calendarPayload())->assertSuccessful()->json('id'));
+    $other = calendarResponseId(asMiniAppViewer(45)->postJson('/app/calendars', calendarPayload())->assertSuccessful()->json('id'));
     postJson("/app/calendars/$other/publish")->assertSuccessful();
-    withSession(['telegram_id' => 41])->postJson("/app/calendars/$id/publish")->assertConflict();
+    asMiniAppViewer(41)->postJson("/app/calendars/$id/publish")->assertConflict();
     expect(Calendar::findOrFail($id)->published_at)->toBeNull();
     expect(GiftDay::where('calendar_id', $id)->count())->toBe(2);
 });
@@ -121,7 +120,7 @@ test('для себя нужен только идентификатор, мож
     $calendars = app(ClaimCalendarsAction::class);
     $calendars->execute(41, null);
     $payload = calendarPayload('self');
-    $id = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', $payload)->assertSuccessful()->json('id'));
+    $id = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', $payload)->assertSuccessful()->json('id'));
     postJson("/app/calendars/$id/publish")->assertSuccessful();
     expect($calendars->execute(41, null))->toBe([$id]);
     Carbon::setTestNow('2026-12-07 07:01:00 UTC');
@@ -137,7 +136,7 @@ test('редактор проверяет високосную дату и ба�
     $payload = calendarPayload('self');
     $payload['month'] = '2028-02';
     $payload['days'] = [['date' => '2028-02-29', 'text' => 'Сюрприз!']];
-    withSession(['telegram_id' => 41])->postJson('/app/calendars', $payload)->assertSuccessful();
+    asMiniAppViewer(41)->postJson('/app/calendars', $payload)->assertSuccessful();
     $payload['days'][0]['date'] = '2027-02-29';
     postJson('/app/calendars', $payload)->assertUnprocessable();
     $payload['days'][0] = ['date' => '2028-03-01', 'text' => 'Ой'];
@@ -149,7 +148,7 @@ test('редактор проверяет високосную дату и ба�
 test('смена ника при коллизии месяца возвращает второму автору редактируемый черновик', function () {
     $calendars = app(ClaimCalendarsAction::class);
     $calendars->execute(41, 'Author');
-    $one = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', calendarPayload())->json('id'));
+    $one = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', calendarPayload())->json('id'));
     postJson("/app/calendars/$one/publish")->assertSuccessful();
     $calendars->execute(42, 'Receiver');
     $payload = calendarPayload();
@@ -164,7 +163,7 @@ test('после публикации можно исправить ожидаю
     $calendars = app(ClaimCalendarsAction::class);
     $calendars->execute(41, 'Author');
     $payload = calendarPayload();
-    $id = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', $payload)->json('id'));
+    $id = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', $payload)->json('id'));
     postJson("/app/calendars/$id/publish")->assertSuccessful();
     $payload['username'] = '@CorrectName';
     putJson("/app/calendars/$id", $payload)->assertSuccessful();
@@ -179,7 +178,7 @@ test('лимит публикаций относится к автору и вы
     $calendars->execute(41, 'Author');
     $calendars->execute(42, 'Other');
     foreach ([41, 42] as $authorId) {
-        $id = calendarResponseId(withSession(['telegram_id' => $authorId])->postJson('/app/calendars', calendarPayload('self'))->json('id'));
+        $id = calendarResponseId(asMiniAppViewer($authorId)->postJson('/app/calendars', calendarPayload('self'))->json('id'));
         postJson("/app/calendars/$id/publish")->assertSuccessful();
         if ($authorId === 41) {
             foreach (range(1, 5) as $_) {
@@ -194,9 +193,9 @@ test('опубликованный календарь на известный н
     $calendars = app(ClaimCalendarsAction::class);
     $calendars->execute(41, 'Author');
     $calendars->execute(42, 'Receiver');
-    $pending = calendarResponseId(withSession(['telegram_id' => 41])->postJson('/app/calendars', calendarPayload())->json('id'));
+    $pending = calendarResponseId(asMiniAppViewer(41)->postJson('/app/calendars', calendarPayload())->json('id'));
     postJson("/app/calendars/$pending/publish")->assertSuccessful();
-    $self = calendarResponseId(withSession(['telegram_id' => 42])->postJson('/app/calendars', calendarPayload('self'))->json('id'));
+    $self = calendarResponseId(asMiniAppViewer(42)->postJson('/app/calendars', calendarPayload('self'))->json('id'));
     postJson("/app/calendars/$self/publish")->assertConflict();
     expect($calendars->execute(42, 'Receiver'))->toBe([$pending]);
 });
@@ -232,7 +231,7 @@ test('параллельные публикации и открытия в от�
         $calendars->execute($authorId, null);
         $data = calendarPayload();
         $data['username'] = 'ParallelReceiver';
-        $ids[$authorId] = calendarResponseId(withSession(['telegram_id' => $authorId])->postJson('/app/calendars', $data)->json('id'));
+        $ids[$authorId] = calendarResponseId(asMiniAppViewer($authorId)->postJson('/app/calendars', $data)->json('id'));
     }
 
     // Дочерние процессы должны видеть сохранённые черновики через отдельные соединения.

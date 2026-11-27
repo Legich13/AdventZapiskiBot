@@ -9,7 +9,7 @@ use App\Models\GiftDay;
 use App\Models\TelegramUser;
 use App\Models\WidgetMessage;
 use App\Telegram\Contracts\WidgetRepository;
-use App\Telegram\DTO\RenderedWidgetDTO;
+use App\Telegram\DTO\BotMessageDTO;
 use App\Telegram\DTO\WidgetInboxItemDTO;
 use App\Telegram\DTO\WidgetStateDTO;
 use App\Telegram\DTO\WidgetTargetDTO;
@@ -35,20 +35,20 @@ final class EloquentWidgetRepository implements WidgetRepository
     }
 
     /** {@inheritDoc} */
-    public function recordMessage(int $viewerId, int $calendarId, ?string $giftDate, ?int $telegramId, RenderedWidgetDTO $widget): int
+    public function recordMessage(int $viewerId, ?int $telegramId, BotMessageDTO $message): int
     {
         return WidgetMessage::query()->create([
-            'calendar_id' => $calendarId, 'recipient_id' => $viewerId, 'gift_date' => $giftDate,
-            'telegram_message_id' => $telegramId, 'html' => $telegramId === null ? $widget->html : null,
-            'caption' => $widget->caption,
+            'calendar_id' => $message->calendarId, 'recipient_id' => $viewerId, 'gift_date' => $message->giftDate,
+            'telegram_message_id' => $telegramId, 'caption' => $message->text,
+            'button_text' => $message->button, 'app_path' => $message->appPath, 'photo' => $message->photo,
         ])->id;
     }
 
     /** {@inheritDoc} */
     public function targetForRecipient(int $viewerId, int $id): ?WidgetTargetDTO
     {
-        $message = WidgetMessage::query()->with('calendar:id,month')->where('recipient_id', $viewerId)->find($id, ['id', 'calendar_id', 'gift_date']);
-        if ($message === null || $message->calendar === null) {
+        $message = WidgetMessage::query()->with('calendar:id,month')->whereNull('app_path')->where('recipient_id', $viewerId)->find($id, ['id', 'calendar_id', 'gift_date']);
+        if ($message === null || $message->calendar_id === null || $message->calendar === null) {
             return null;
         }
 
@@ -58,14 +58,14 @@ final class EloquentWidgetRepository implements WidgetRepository
     /** {@inheritDoc} */
     public function localIdForTelegramMessage(int $viewerId, int $telegramId): ?int
     {
-        return WidgetMessage::query()->where('recipient_id', $viewerId)->where('telegram_message_id', $telegramId)->first(['id'])?->id;
+        return WidgetMessage::query()->where('recipient_id', $viewerId)->whereNull('app_path')->where('telegram_message_id', $telegramId)->first(['id'])?->id;
     }
 
     /** {@inheritDoc} */
     public function recentForViewer(int $viewerId): Collection
     {
-        return WidgetMessage::query()->where('recipient_id', $viewerId)->latest('id')->limit(40)->get(['id', 'gift_date'])
-            ->map(fn (WidgetMessage $message): WidgetInboxItemDTO => new WidgetInboxItemDTO($message->id, $message->gift_date));
+        return WidgetMessage::query()->where('recipient_id', $viewerId)->latest('id')->limit(40)->get(['id', 'gift_date', 'caption', 'button_text', 'app_path', 'photo'])
+            ->map(fn (WidgetMessage $message): WidgetInboxItemDTO => new WidgetInboxItemDTO($message->id, $message->gift_date, $message->caption, $message->button_text, $message->app_path, $message->photo));
     }
 
     /** {@inheritDoc} */

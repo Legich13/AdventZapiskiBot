@@ -7,7 +7,6 @@ namespace App\Calendar\Actions;
 use App\Calendar\Contracts\CalendarRepository;
 use App\Calendar\DTO\OpenedGiftDTO;
 use App\Policies\CalendarPolicy;
-use App\Support\GiftClock;
 use Illuminate\Support\Facades\DB;
 
 final readonly class OpenGiftAction
@@ -16,12 +15,10 @@ final readonly class OpenGiftAction
 
     public function execute(int $viewerId, int $calendarId, string $date): OpenedGiftDTO
     {
-        abort_unless(preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date)
-            && checkdate((int) substr($date, 5, 2), (int) substr($date, 8, 2), (int) substr($date, 0, 4)), 404);
-
         return DB::transaction(function () use ($viewerId, $calendarId, $date): OpenedGiftDTO {
-            abort_unless($this->policy->receive($viewerId, $this->repository->calendar($calendarId)), 403);
-            abort_if($date > GiftClock::now('Europe/Moscow')->toDateString(), 403, 'Подарок откроется в свою дату.');
+            $calendar = $this->repository->calendar($calendarId);
+            abort_unless($this->policy->receive($viewerId, $calendar) && $calendar !== null, 403);
+            $this->policy->ensureAvailableDate($calendar, $date);
             $gift = $this->repository->openDay($calendarId, $date);
             abort_if($gift === null, 404, 'На этот день подарка нет.');
 

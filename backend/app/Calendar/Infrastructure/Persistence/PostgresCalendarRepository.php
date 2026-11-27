@@ -54,9 +54,30 @@ final class PostgresCalendarRepository implements CalendarRepository
         return TelegramUser::where('username', $username)->first(['id'])?->id;
     }
 
+    public function hasAuthored(int $authorId): bool
+    {
+        return Calendar::where('author_id', $authorId)->exists();
+    }
+
     public function authored(int $authorId): array
     {
         return array_values(Calendar::where('author_id', $authorId)->latest()->latest('id')->get()->map($this->dto(...))->all());
+    }
+
+    public function received(int $recipientId): array
+    {
+        return array_values(Calendar::where('recipient_id', $recipientId)->whereNotNull('published_at')
+            ->whereNotNull('claimed_at')->orderByDesc('month')->get()->map($this->dto(...))->all());
+    }
+
+    public function openedDates(int $calendarId): array
+    {
+        $dates = [];
+        foreach (GiftDay::where('calendar_id', $calendarId)->orderBy('date')->get(['date', 'opened_at']) as $day) {
+            $dates[$day->date] = $day->opened_at !== null;
+        }
+
+        return $dates;
     }
 
     public function calendar(int $id): ?CalendarDTO

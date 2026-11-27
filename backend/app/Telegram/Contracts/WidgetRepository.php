@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Telegram\Contracts;
 
-use App\Telegram\DTO\RenderedWidgetDTO;
+use App\Telegram\DTO\BotMessageDTO;
 use App\Telegram\DTO\WidgetInboxItemDTO;
 use App\Telegram\DTO\WidgetStateDTO;
 use App\Telegram\DTO\WidgetTargetDTO;
@@ -17,7 +17,7 @@ interface WidgetRepository
     public function stateForRecipient(int $viewerId, int $calendarId, string $today): ?WidgetStateDTO;
 
     /** Сохраняет привязку сообщения к исходному календарю и дню. */
-    public function recordMessage(int $viewerId, int $calendarId, ?string $giftDate, ?int $telegramId, RenderedWidgetDTO $widget): int;
+    public function recordMessage(int $viewerId, ?int $telegramId, BotMessageDTO $message): int;
 
     /** Разрешает запрос только в контексте сообщения получателя. */
     public function targetForRecipient(int $viewerId, int $id): ?WidgetTargetDTO;

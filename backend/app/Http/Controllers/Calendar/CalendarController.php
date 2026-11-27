@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Calendar;
 use App\Calendar\Actions\PublishCalendarAction;
 use App\Calendar\Actions\SaveCalendarAction;
 use App\Calendar\Services\EditorPageService;
+use App\Calendar\Services\RecipientPageService;
 use App\Http\Requests\Calendar\EditorPageRequest;
 use App\Http\Requests\Calendar\PublishCalendarRequest;
 use App\Http\Requests\Calendar\SaveCalendarRequest;
@@ -16,13 +17,15 @@ use Illuminate\Validation\ValidationException;
 
 final class CalendarController
 {
-    public function index(EditorPageRequest $request, EditorPageService $editor): View
+    public function index(EditorPageRequest $request, EditorPageService $editor, RecipientPageService $recipient): View
     {
         $page = $editor->forViewer($request->viewerId(), $request->has('calendar') ? $request->integer('calendar') : null);
 
         return view('app', [
             'viewer' => $page->viewer, 'calendars' => $page->calendars, 'calendar' => $page->calendar,
             'notes' => $page->notes, 'today' => $page->today,
+            'editing' => $page->calendar !== null || $request->boolean('create'),
+            'received' => $page->viewer === null ? [] : $recipient->calendars($page->viewer->id),
         ]);
     }
 

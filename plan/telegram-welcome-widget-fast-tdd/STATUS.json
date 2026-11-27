@@ -4,10 +4,10 @@
   "planRevision": 1,
   "planSha256": "08cffe4a330dc542e30c2ed98bded7c5b4ab6897034a7a8733fe3d3a5b43c6b4",
   "orchestratorId": "/root",
-  "overallState": "active",
+  "overallState": "superseded",
   "currentStage": "007",
-  "supersededBy": null,
-  "updatedAt": "2026-11-26T19:42:57Z",
+  "supersededBy": "telegram-welcome-widget-v2-fast-tdd",
+  "updatedAt": "2026-11-27T06:29:04Z",
   "stages": [
     {
       "id": "000",

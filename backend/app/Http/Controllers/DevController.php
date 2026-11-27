@@ -14,7 +14,6 @@ use App\Studio\Actions\StartPreviewChatAction;
 use App\Studio\DemoProfiles;
 use App\Telegram\Actions\AnswerWidgetAction;
 use App\Telegram\Services\WidgetInboxService;
-use App\Telegram\Services\WidgetRenderer;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -22,7 +21,7 @@ use Illuminate\Http\Request;
 
 final class DevController
 {
-    public function index(Request $request, WidgetInboxService $inbox, WidgetRenderer $renderer): View
+    public function index(Request $request, WidgetInboxService $inbox): View
     {
         $viewer = $request->session()->get('telegram_id');
 
@@ -30,7 +29,6 @@ final class DevController
             'profiles' => DemoProfiles::PEOPLE,
             'viewer' => $viewer,
             'messages' => $inbox->forViewer(is_int($viewer) ? $viewer : null),
-            'welcome' => is_int($viewer) ? $renderer->renderWelcome(url('/app')) : null,
         ]);
     }
 
@@ -50,9 +48,9 @@ final class DevController
 
     public function start(PreviewSessionRequest $request, StartPreviewChatAction $start): RedirectResponse
     {
-        $received = $start->execute($request->viewer());
+        $start->execute($request->viewer());
 
-        return redirect('/dev')->with('notice', $received ? 'Календарь появился в чате.' : 'Пока нет полученных календарей. Можно создать свой.');
+        return redirect('/dev')->with('notice', 'Команда /start обработана.');
     }
 
     public function morning(PreviewSessionRequest $request, RunPreviewMorningAction $morning): RedirectResponse

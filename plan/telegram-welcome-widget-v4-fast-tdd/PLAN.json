@@ -1,0 +1,585 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "telegram-welcome-widget-v4-fast-tdd",
+  "slug": "telegram-welcome-widget-v4",
+  "revision": 4,
+  "supersedes": "telegram-welcome-widget-v3-fast-tdd",
+  "title": "Mini App и бот — передача календарей после обновления",
+  "goal": "Адресат получает обычную открытку и датированные уведомления, открывает нужную записку в Mini App и возвращается к месяцу.",
+  "createdAt": "2026-11-27T08:35:39Z",
+  "architecture": {
+    "path": "ARCHITECTURE.md",
+    "sha256": "78de17bf1a5507fcca859ca534bf45bb8d89586eccb6f25833cac923f79b7fb6",
+    "ruleIds": [
+      "ARCH-ACCESS-001",
+      "ARCH-API-001",
+      "ARCH-API-002",
+      "ARCH-API-006",
+      "ARCH-AUTH-001",
+      "ARCH-AUTH-002",
+      "ARCH-AUTH-006",
+      "ARCH-BE-002",
+      "ARCH-BE-004",
+      "ARCH-BE-007",
+      "ARCH-BE-011",
+      "ARCH-BE-012",
+      "ARCH-BE-013",
+      "ARCH-BE-014",
+      "ARCH-BE-016",
+      "ARCH-BE-017",
+      "ARCH-BE-018",
+      "ARCH-CALENDAR-001",
+      "ARCH-CALENDAR-002",
+      "ARCH-DOC-002",
+      "ARCH-LOCAL-001",
+      "ARCH-MOD-001",
+      "ARCH-MOD-002",
+      "ARCH-PERF-003",
+      "ARCH-PLAN-001",
+      "ARCH-SRC-002",
+      "ARCH-TELEGRAM-001"
+    ]
+  },
+  "protocol": {
+    "path": "plan/FAST_STRICT_V2.md",
+    "sha256": "cf6add975e1b75b52f4546b120bb0e7136c0e27adb29d5a4783387f53c396380"
+  },
+  "scope": {
+    "in": [
+      "Обычные уведомления и Mini App с исходным дизайном, восстановление ранее начатого вручения, учёт исходов и штатное обновление существующих БД."
+    ],
+    "out": [
+      "Внешняя поставка, массовая пересылка и изменение времени или уникальности утренней доставки."
+    ]
+  },
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "functional",
+      "statement": "Первая открытка предшествует утреннему сообщению.",
+      "acceptance": [
+        {
+          "id": "AC-001",
+          "statement": "Уже поставленное в очередь утреннее задание дожидается пропущенной старой открытки до первого повтора webhook. Подтверждённая выдача снимает ожидание для соответствующего календаря."
+        }
+      ]
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "statement": "Подтверждённый отказ и неопределённый результат различимы.",
+      "acceptance": [
+        {
+          "id": "AC-002",
+          "statement": "Журнал позволяет отличить явный отказ Telegram от потери ответа. Неоднозначная попытка не создаёт повтор. Ошибка 429 оставляет допустимый отложенный повтор."
+        }
+      ]
+    },
+    {
+      "id": "REQ-003",
+      "type": "functional",
+      "statement": "Штатное обновление существующих установок.",
+      "acceptance": [
+        {
+          "id": "AC-003",
+          "statement": "Очередная миграция обычной командой обновляет уже применённую 000001 и свежую схему. После обновления сохраняются календари, даты, прочтения и ранее отправленные сообщения."
+        }
+      ]
+    },
+    {
+      "id": "REQ-004",
+      "type": "functional",
+      "statement": "Доступность получателя в Mini App.",
+      "acceptance": [
+        {
+          "id": "AC-004",
+          "statement": "Приветствие, фотокарточка и утреннее сообщение ведут в оформленное как исходные виджеты приложение. Получатель сохраняет доступ к месяцу, разрешённому дню и повторному прочтению."
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "stage": "000",
+      "title": "Вручение ранее созданного календаря",
+      "objective": "Проследить получение открытки и утреннего сообщения после обновления при частично исполненном /start.",
+      "agentRole": "business_system",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-001",
+          "kind": "inspection",
+          "command": "Сопоставить порядок сообщений, календарь и действия получателя при старом частичном вручении и повторном входе.",
+          "expected": "Выделены наблюдаемые изменения в чате и признаки неизменности Mini App."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-002",
+      "stage": "000",
+      "title": "Журнал и хранилище сообщений",
+      "objective": "Проследить записи старого и нового обработчика по календарям и исходам отправки.",
+      "agentRole": "architecture_codebase",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-002",
+          "kind": "inspection",
+          "command": "Сопоставить журнал /start, московский день вручения, очереди, подтверждённый ответ Telegram и потерю ответа.",
+          "expected": "Для каждого состояния определены представление в базе и следующий разрешённый шаг."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003"
+      ]
+    },
+    {
+      "id": "TASK-003",
+      "stage": "000",
+      "title": "Риски перехода и проверка",
+      "objective": "Связать реальные замечания независимых ревью с проверяемыми переходами данных и перечнем исходных свидетельств.",
+      "agentRole": "qa_risk",
+      "executionMode": "read_only_subagent",
+      "dependsOn": [],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-003",
+          "kind": "inspection",
+          "command": "Сверить три заключения v3, следы отправки, порядок старой очереди и форму неизменного пользовательского пути.",
+          "expected": "Определены тестовый вход, путь обновления и границы фактической проверки."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "analysis"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-004",
+      "stage": "001",
+      "title": "Фиксация исходных байтов",
+      "objective": "Закрепить полный предыдущий снимок и точные новые пути до исправления.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-001",
+        "TASK-002",
+        "TASK-003"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-004",
+          "kind": "inspection",
+          "command": "Сопоставить байты всех 71 файлов по SHA-256 манифеста v3 24e7aa4e и проверить отсутствие двух новых путей в рабочем дереве и исходном Git HEAD 29bc7c8.",
+          "expected": "Манифест охватывает предыдущий выпуск и добавленные файлы миграции и теста."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-005",
+      "stage": "002",
+      "title": "Обновление вручения и следов отправки",
+      "objective": "Зафиксировать ожидающие первые открытки ранее вручённых календарей и различить известный отказ и неопределённый результат.",
+      "agentRole": "telegram_delivery",
+      "executionMode": "writer",
+      "dependsOn": [
+        "TASK-004"
+      ],
+      "ownedPaths": [
+        "backend/app/Telegram/Actions/HandleTelegramUpdateAction.php",
+        "backend/app/Telegram/DTO/StartReplyDTO.php",
+        "backend/app/Telegram/Infrastructure/Persistence/PostgresMorningDeliveryRepository.php",
+        "backend/app/Telegram/Infrastructure/Persistence/PostgresStartUpdateRepository.php",
+        "backend/database/migrations/2026_11_27_000001_support_bot_messages.php",
+        "backend/database/migrations/2026_11_27_000002_track_start_delivery.php",
+        "backend/tests/Feature/TelegramStartUpgradeTest.php"
+      ],
+      "createPaths": [
+        "backend/database/migrations/2026_11_27_000002_track_start_delivery.php",
+        "backend/tests/Feature/TelegramStartUpgradeTest.php"
+      ],
+      "deletePaths": [],
+      "verificationMode": "tdd",
+      "checks": [
+        {
+          "id": "CHECK-005",
+          "kind": "tdd",
+          "command": "make test-suite suite=TelegramStartUpgradeTest",
+          "expected": "Поведенческий сценарий воспроизводит опережение открытки и различает остатки прежнего и нового журналов, повтор и фактический отказ."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "design",
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        },
+        {
+          "id": "laravel:tdd-with-pest",
+          "applyAt": [
+            "red",
+            "green",
+            "refactor",
+            "verification"
+          ],
+          "purpose": "Измерить целевое поведение на одном и том же входе до и после изменения.",
+          "expectedOutcome": "Есть диагностируемое падение, успех той же команды и целевая проверка после интеграции."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003"
+      ]
+    },
+    {
+      "id": "TASK-006",
+      "stage": "005",
+      "title": "Проверка итогового выпуска",
+      "objective": "Сверить документы поддержки, исправления бота и весь пользовательский выпуск с предыдущим снимком. Проверить общие гейты.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-005"
+      ],
+      "ownedPaths": [
+        "README.md",
+        "backend/.env.example",
+        "backend/app/Calendar/Actions/ClaimCalendarsAction.php",
+        "backend/app/Calendar/Actions/OpenGiftAction.php",
+        "backend/app/Calendar/Contracts/CalendarRepository.php",
+        "backend/app/Calendar/DTO/ClaimedCalendarsDTO.php",
+        "backend/app/Calendar/DTO/RecipientPageDTO.php",
+        "backend/app/Calendar/Infrastructure/Persistence/PostgresCalendarRepository.php",
+        "backend/app/Calendar/Services/RecipientPageService.php",
+        "backend/app/Http/Controllers/Calendar/CalendarController.php",
+        "backend/app/Http/Controllers/Calendar/MiniAppSessionController.php",
+        "backend/app/Http/Controllers/Calendar/ReceivedCalendarController.php",
+        "backend/app/Http/Controllers/DevController.php",
+        "backend/app/Http/Middleware/MiniAppLaunch.php",
+        "backend/app/Http/Requests/Calendar/EditorPageRequest.php",
+        "backend/app/Http/Resources/Calendar/OpenedGiftResource.php",
+        "backend/app/Models/WidgetMessage.php",
+        "backend/app/Policies/CalendarPolicy.php",
+        "backend/app/Providers/ApiDocumentationServiceProvider.php",
+        "backend/app/Studio/Actions/StartPreviewChatAction.php",
+        "backend/app/Telegram/Actions/DeliverMorningGiftAction.php",
+        "backend/app/Telegram/Actions/PrepareStartUpdateAction.php",
+        "backend/app/Telegram/Contracts/MorningDeliveryRepository.php",
+        "backend/app/Telegram/Contracts/WidgetRepository.php",
+        "backend/app/Telegram/DTO/BotMessageDTO.php",
+        "backend/app/Telegram/DTO/WidgetInboxItemDTO.php",
+        "backend/app/Telegram/Infrastructure/NutgramGateway.php",
+        "backend/app/Telegram/Infrastructure/Persistence/EloquentWidgetRepository.php",
+        "backend/app/Telegram/Infrastructure/PhotoPreparationException.php",
+        "backend/app/Telegram/Services/WidgetRenderer.php",
+        "backend/config/services.php",
+        "backend/config/session.php",
+        "backend/public/images/calendar-cover.png",
+        "backend/public/mini-app-launch.js",
+        "backend/public/studio.css",
+        "backend/public/studio.js",
+        "backend/resources/views/app.blade.php",
+        "backend/resources/views/dev.blade.php",
+        "backend/resources/views/launch.blade.php",
+        "backend/resources/views/received.blade.php",
+        "backend/routes/calendar.php",
+        "backend/tests/Feature/CalendarFlowTest.php",
+        "backend/tests/Feature/CalendarRecipientTest.php",
+        "backend/tests/Feature/Documentation/DocumentationAccessTest.php",
+        "backend/tests/Feature/StudioTest.php",
+        "backend/tests/Feature/TelegramReservedCalendarTest.php",
+        "backend/tests/Feature/TelegramStartReplayTest.php",
+        "backend/tests/Feature/TelegramTodayDeliveryTest.php",
+        "backend/tests/Feature/TelegramWelcomeWidgetTest.php",
+        "backend/tests/Feature/TelegramWidgetTest.php",
+        "backend/tests/Pest.php",
+        "backend/tests/Unit/Architecture/AdventArchitectureTest.php",
+        "docs/INFRASTRUCTURE.md",
+        "docs/backend/API_CONTRACT.md",
+        "docs/backend/ARCHITECTURE.md",
+        "docs/backend/TESTING.md",
+        "docs/backend/calendar.md",
+        "docs/backend/domain-models.md",
+        "docs/backend/model-business-evidence.md",
+        "docs/backend/repositories.md",
+        "docs/backend/telegram.md",
+        "docs/contracts/openapi.json",
+        "docs/flows/morning-delivery.md",
+        "docs/flows/open-gift.md",
+        "docs/flows/publish-calendar.md",
+        "docs/flows/staff-support.md"
+      ],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-006",
+          "kind": "inspection",
+          "command": "make quality",
+          "expected": "Стиль, архитектура, типы, точность экспорта и все тесты проходят на итоговом манифесте."
+        },
+        {
+          "id": "CHECK-008",
+          "kind": "inspection",
+          "command": "make pre-commit",
+          "expected": "Diff, аудит зависимостей, маршруты и полный перечень планов проходят."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "verification"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004"
+      ]
+    },
+    {
+      "id": "TASK-007",
+      "stage": "007",
+      "title": "Локальная сдача",
+      "objective": "Передать подтверждённый локальный результат, ограничения окружения и независимые заключения.",
+      "agentRole": "orchestrator",
+      "executionMode": "orchestrator",
+      "dependsOn": [
+        "TASK-006"
+      ],
+      "ownedPaths": [],
+      "createPaths": [],
+      "deletePaths": [],
+      "verificationMode": "inspection",
+      "checks": [
+        {
+          "id": "CHECK-007",
+          "kind": "inspection",
+          "command": "Сверить все проверки, путь штатного обновления, соответствие прежнему UX и три решения по замороженному пакету.",
+          "expected": "Решения, ограничения, исходы и проверенные пути отражены в итогах локальной сдачи."
+        }
+      ],
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "handoff"
+          ],
+          "purpose": "Использовать существующие компоненты и проверять только затронутые границы.",
+          "expectedOutcome": "Каждая проверка относится к пользовательскому действию или его публичному контракту."
+        }
+      ],
+      "requirementIds": [
+        "REQ-001",
+        "REQ-002",
+        "REQ-003",
+        "REQ-004"
+      ],
+      "acceptanceIds": [
+        "AC-001",
+        "AC-002",
+        "AC-003",
+        "AC-004"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "stage": "005",
+      "command": "make pre-commit"
+    },
+    {
+      "id": "GATE-QUALITY",
+      "stage": "005",
+      "command": "make quality"
+    }
+  ],
+  "reviewAxes": [
+    {
+      "id": "REV-SECURITY-PRIVACY-DATA",
+      "title": "Security / Privacy / Data / PostgreSQL",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-ARCHITECTURE-API-PONYTAIL",
+      "title": "Architecture / API / Ponytail",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    },
+    {
+      "id": "REV-SPEC-TDD-UX-A11Y",
+      "title": "Spec / TDD / UX / a11y",
+      "skills": [
+        {
+          "id": "ponytail:ponytail",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Использовать общие операции для Telegram и локальной среды.",
+          "expectedOutcome": "В каждом пользовательском действии действует одна реализация бизнес-правила."
+        },
+        {
+          "id": "ponytail:ponytail-review",
+          "applyAt": [
+            "review"
+          ],
+          "purpose": "Проверить границы действия на замороженном снимке.",
+          "expectedOutcome": "Ревью фиксирует конкретные сценарии риска, их последствия и решение."
+        }
+      ]
+    }
+  ]
+}

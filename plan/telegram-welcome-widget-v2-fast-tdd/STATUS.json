@@ -1,0 +1,646 @@
+{
+  "protocolVersion": "FAST_STRICT/2",
+  "planId": "telegram-welcome-widget-v2-fast-tdd",
+  "planRevision": 2,
+  "planSha256": "dfbc001fc088d082b104f621dc7177c9d090f8db0b497a9942d7135106743af0",
+  "orchestratorId": "/root",
+  "overallState": "superseded",
+  "currentStage": "005",
+  "supersededBy": "telegram-welcome-widget-v3-fast-tdd",
+  "updatedAt": "2026-11-27T07:48:35Z",
+  "stages": [
+    {
+      "id": "000",
+      "state": "complete"
+    },
+    {
+      "id": "001",
+      "state": "complete"
+    },
+    {
+      "id": "002",
+      "state": "complete"
+    },
+    {
+      "id": "003",
+      "state": "complete"
+    },
+    {
+      "id": "004",
+      "state": "complete"
+    },
+    {
+      "id": "005",
+      "state": "in_progress"
+    },
+    {
+      "id": "006",
+      "state": "pending"
+    },
+    {
+      "id": "007",
+      "state": "pending"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "state": "complete",
+      "executorId": "/root/app",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-001"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-002",
+      "state": "complete",
+      "executorId": "/root/bot",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-002"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-003",
+      "state": "complete",
+      "executorId": "/root/plan",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-ANALYSIS-003"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-004",
+      "state": "complete",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-BASELINE"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-005",
+      "state": "complete",
+      "executorId": "/root/app",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "laravel:tdd-with-pest"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-RECIPIENT",
+        "EVID-GREEN-RECIPIENT-STYLE",
+        "EVID-QA-RECIPIENT",
+        "EVID-QA-RECIPIENT-FORMAT",
+        "EVID-RED-RECIPIENT",
+        "EVID-RED-RECIPIENT-STYLE"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-006",
+      "state": "complete",
+      "executorId": "/root/bot",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "laravel:tdd-with-pest"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-TELEGRAM",
+        "EVID-QA-TELEGRAM",
+        "EVID-RED-TELEGRAM",
+        "EVID-RED-TELEGRAM-LABEL"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-007",
+      "state": "complete",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail",
+        "laravel:tdd-with-pest"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GREEN-OPENAPI",
+        "EVID-QA-OPENAPI",
+        "EVID-RED-OPENAPI"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-008",
+      "state": "in_progress",
+      "executorId": "/root",
+      "usedSkills": [
+        "ponytail:ponytail"
+      ],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [
+        "EVID-GATE-PRECOMMIT-ATTEMPT-001",
+        "EVID-GATE-QUALITY-ATTEMPT-001",
+        "EVID-GATE-QUALITY-ATTEMPT-002"
+      ],
+      "handoffEvidenceId": null
+    },
+    {
+      "id": "TASK-009",
+      "state": "pending",
+      "executorId": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "evidenceIds": [],
+      "handoffEvidenceId": null
+    }
+  ],
+  "activeWriters": [],
+  "evidence": [
+    {
+      "id": "EVID-ANALYSIS-001",
+      "stage": "000",
+      "taskId": "TASK-001",
+      "checkId": "CHECK-001",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-ANALYSIS-001.md",
+      "sha256": "caac8db0e49e79872e9ddc5a2d9d39e30cd7f6fb8c4d8312e7a434411407dc1c",
+      "command": "Сопоставить экран автора и права получателя с текущими операциями календаря.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:29:04Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-002",
+      "stage": "000",
+      "taskId": "TASK-002",
+      "checkId": "CHECK-002",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-ANALYSIS-002.md",
+      "sha256": "bcb7bbf82e35c85f05a118d00ea868f6a2945601ae413d59fb6f446aca73875b",
+      "command": "Проследить обработку /start и утреннюю доставку в транзакциях и транспортном адаптере.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:29:04Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-ANALYSIS-003",
+      "stage": "000",
+      "taskId": "TASK-003",
+      "checkId": "CHECK-003",
+      "kind": "analysis",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-ANALYSIS-003.md",
+      "sha256": "913493c079796878a2f5ee59d9cae853ca33f683c08a7c5e1598002a27f544cc",
+      "command": "Сверить проверки входа, раскрытия записки и повторов после смены дня, аккаунта и транспорта.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:29:04Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-BASELINE",
+      "stage": "001",
+      "taskId": "TASK-004",
+      "checkId": "CHECK-004",
+      "kind": "baseline",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/baseline.sha256",
+      "sha256": "12a93c3f537084741cabf6b8cb7528e1957e2ee654350d47d495c2d1f6accaac",
+      "command": "Проверить назначение точных путей и их исходные SHA-256 по первоначальному чистому 29bc7c8.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:29:04Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-PREFLIGHT-ALL",
+      "stage": "001",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GATE-PREFLIGHT-ALL.md",
+      "sha256": "97fc2cce06a43e97668686f08b9d868b0044d548b10ba3c42950a1ac4e0f95fb",
+      "command": "make dev-plan-check-all",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:29:04Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-RECIPIENT",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-RED-RECIPIENT.md",
+      "sha256": "4cae0204f2f7ec327e04780cc931272b0db17ae000fd39b1fd4f64e3d409f636",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:29:12Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-TELEGRAM",
+      "stage": "002",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-RED-TELEGRAM.md",
+      "sha256": "19de3a750127106dc0b7d42f4c083bc2b5cec6e642bf9055d6b50bc350903b21",
+      "command": "make test-suite suite='TelegramWelcomeWidgetTest|StudioTest.*обычные сообщения'",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:29:12Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-OPENAPI",
+      "stage": "002",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-RED-OPENAPI.md",
+      "sha256": "2426ed851b2a65a64edefd4bafc629954371159d774a0ce8473afa29566ff2e1",
+      "command": "make test-suite suite=DocumentationAccessTest",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:33:07Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-RECIPIENT",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GREEN-RECIPIENT.md",
+      "sha256": "da0f7502c681f15c6c620bfea752f79a58bb442d70805c7bb8f4175a2a1e9e4f",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:33:07Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-OPENAPI",
+      "stage": "003",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "green",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GREEN-OPENAPI.md",
+      "sha256": "c3bf90b1db1e25fc3cf06135adfbd64d4ebb5754382fab661d635fc584e5157d",
+      "command": "make test-suite suite=DocumentationAccessTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:34:33Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-TELEGRAM-LABEL",
+      "stage": "002",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-RED-TELEGRAM-LABEL.md",
+      "sha256": "09011260f60b4fec9f36755dd5bc0ec6d260a351f1310eff26c6a076cb3870ac",
+      "command": "make test-suite suite='TelegramWelcomeWidgetTest|StudioTest.*обычные сообщения'",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:43:42Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-TELEGRAM",
+      "stage": "003",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "green",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GREEN-TELEGRAM.md",
+      "sha256": "9ef1c86d94311319d27a5a412e56051a1a038d3b42531fe54271fa134b43bbb6",
+      "command": "make test-suite suite='TelegramWelcomeWidgetTest|StudioTest.*обычные сообщения'",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:43:42Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-RECIPIENT",
+      "stage": "004",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "qa",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-RECIPIENT.md",
+      "sha256": "9a3520d399b1786e8f6a4aaa6df63fdda62047c1b982ad1930bf98691f3508a1",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:43:42Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-AUTHOR",
+      "stage": "004",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-AUTHOR.md",
+      "sha256": "0b220ece4b77dceee2b004ca328a5e62553bfef10ec9b643d8bb053d8b363ccf",
+      "command": "make test-suite suite=CalendarFlow",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:43:42Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-TELEGRAM-REGRESSION",
+      "stage": "004",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-TELEGRAM-REGRESSION.md",
+      "sha256": "63ecafb17888ddc8e2e98d902d415e80dcbf71747dd7f3d1a69aadd419aa0436",
+      "command": "make test-suite suite='Telegram|WidgetInteractionTest|StudioTest'",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:44:14Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-TELEGRAM",
+      "stage": "004",
+      "taskId": "TASK-006",
+      "checkId": "CHECK-006",
+      "kind": "qa",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-TELEGRAM.md",
+      "sha256": "600ef35e50ad78e8b6ee8076dffcf4d861abbabf95d540fc0cb424b59f5aa1c5",
+      "command": "make test-suite suite='TelegramWelcomeWidgetTest|StudioTest.*обычные сообщения'",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:45:19Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-RED-RECIPIENT-STYLE",
+      "stage": "002",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "red",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-RED-RECIPIENT-STYLE.md",
+      "sha256": "f739ff8128c0e4083a756fbf5ca4dcf95c6b652f76b71802f54f0de0f6b328ba",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T06:47:49Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GREEN-RECIPIENT-STYLE",
+      "stage": "003",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "green",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GREEN-RECIPIENT-STYLE.md",
+      "sha256": "7c60c1ec450907050b2a652c3dd202018ab9f891f72377c8936dfcfb6d507e58",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:47:49Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-LAUNCH-BROWSER",
+      "stage": "004",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-LAUNCH-BROWSER.md",
+      "sha256": "d2d3f3f6f336dbfc31add93bceef40b5cc94a669791da33548cfaf906422c521",
+      "command": "node /tmp/calendar-launch-roundtrip-20261127.cjs",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T06:48:15Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-OPENAPI",
+      "stage": "004",
+      "taskId": "TASK-007",
+      "checkId": "CHECK-007",
+      "kind": "qa",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-OPENAPI.md",
+      "sha256": "09f6f677231e3caac8acb856300b8d29f08f86a09d689645fd0cded99af7c7da",
+      "command": "make test-suite suite=DocumentationAccessTest",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:11:48Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-RECEIVED-LOCAL",
+      "stage": "004",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-RECEIVED-LOCAL.md",
+      "sha256": "e9bcb0f5078c1da2f6d0c5ce27423eb8cfd226c5eb2000bd2a27a113c61e89d5",
+      "command": "В локальной мастерской и браузере шириной 390px открыть ежедневную записку, вернуться к месяцу и перечитать.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:11:48Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-QA-CLAIM-LOCAL",
+      "stage": "004",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-CLAIM-LOCAL.md",
+      "sha256": "373e8385025359df84aa2054eed041d88c5d6a7be5ffcb181b1b57b3efbcb0d6",
+      "command": "В локальной мастерской опубликовать тестовый месяц и пройти два запуска чата получателем через браузер.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:11:48Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-001",
+      "stage": "005",
+      "taskId": "TASK-008",
+      "checkId": "CHECK-008",
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-001.md",
+      "sha256": "bef3cdc580c191b73353ed24373f61a27715d47ea64581f4e4a96eaa656c6a6a",
+      "command": "make quality",
+      "exitCode": 2,
+      "observedAt": "2026-11-27T07:12:21Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "62a60df8a8d0f02747f25dcea707c32f9eaaef63375d3db4ebd00014bb102f0a"
+    },
+    {
+      "id": "EVID-QA-RECIPIENT-FORMAT",
+      "stage": "004",
+      "taskId": "TASK-005",
+      "checkId": "CHECK-005",
+      "kind": "qa",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-QA-RECIPIENT-FORMAT.md",
+      "sha256": "73945b1beddc4264ba6c3d74877c24fb776becdf400eb6f01988dc160aae1f14",
+      "command": "make test-suite suite=CalendarRecipient",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:32:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-QUALITY-ATTEMPT-002",
+      "stage": "005",
+      "taskId": "TASK-008",
+      "checkId": "CHECK-008",
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GATE-QUALITY-ATTEMPT-002.md",
+      "sha256": "b87c0ad769fa16892505fb9508150aeb2255ac2b7f238fec8c0e49cf34ddc658",
+      "command": "make quality",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:32:36Z",
+      "gateId": "GATE-QUALITY",
+      "verifiedManifestSha256": "02ace9234abc1da9d574613a97bad8d286f48d9936dde9e23c4e3531c4eff607"
+    },
+    {
+      "id": "EVID-GATE-PRECOMMIT-ATTEMPT-001",
+      "stage": "005",
+      "taskId": "TASK-008",
+      "checkId": "CHECK-010",
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GATE-PRECOMMIT-ATTEMPT-001.md",
+      "sha256": "c0d3e2664e901e374324d47233198ad41b1ab274c8f6cba97502e0d601267a97",
+      "command": "make pre-commit",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:32:36Z",
+      "gateId": "GATE-PRECOMMIT",
+      "verifiedManifestSha256": "02ace9234abc1da9d574613a97bad8d286f48d9936dde9e23c4e3531c4eff607"
+    },
+    {
+      "id": "EVID-SNAPSHOT-ROUND-1",
+      "stage": "006",
+      "taskId": null,
+      "checkId": null,
+      "kind": "snapshot",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-SNAPSHOT-ROUND-1.md",
+      "sha256": "7034dad50fa6ab8a4bc377f2e5786137c61dbad1f549bc38812f302f90b0b0bc",
+      "command": "Связать утверждённые файлы, immutable evidence и манифест в канонический снимок.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:32:36Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    },
+    {
+      "id": "EVID-GATE-REVIEW-LEDGER-1",
+      "stage": "005",
+      "taskId": null,
+      "checkId": null,
+      "kind": "gate",
+      "path": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/EVID-GATE-REVIEW-LEDGER-1.md",
+      "sha256": "8afc8ea3e357ce03ea0e7bedd73b9e3715ed526201f524da9ad62497b172d44c",
+      "command": "Сохранить исходные заключения и их хеши перед повторной проверкой.",
+      "exitCode": 0,
+      "observedAt": "2026-11-27T07:46:10Z",
+      "gateId": null,
+      "verifiedManifestSha256": null
+    }
+  ],
+  "gateResults": [
+    {
+      "id": "GATE-PRECOMMIT",
+      "state": "pending",
+      "evidenceId": null
+    },
+    {
+      "id": "GATE-QUALITY",
+      "state": "pending",
+      "evidenceId": null
+    }
+  ],
+  "snapshot": {
+    "state": "invalidated",
+    "round": 1,
+    "manifestPath": "plan/telegram-welcome-widget-v2-fast-tdd/evidence/final.sha256",
+    "manifestSha256": "02ace9234abc1da9d574613a97bad8d286f48d9936dde9e23c4e3531c4eff607",
+    "bundleSha256": "82a183eb213ef7f818e180392fbf8f29b648b9bc745fe31082ad3d3834f1d8a9"
+  },
+  "reviews": [
+    {
+      "axisId": "REV-SECURITY-PRIVACY-DATA",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-ARCHITECTURE-API-PONYTAIL",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    },
+    {
+      "axisId": "REV-SPEC-TDD-UX-A11Y",
+      "reviewerId": null,
+      "verdict": "pending",
+      "round": 0,
+      "snapshotSha256": null,
+      "evidencePath": null,
+      "evidenceSha256": null,
+      "usedSkills": [],
+      "unavailableSkills": [],
+      "skippedSkills": [],
+      "b0": 0,
+      "b1": 0,
+      "b2": 0
+    }
+  ],
+  "blockers": []
+}

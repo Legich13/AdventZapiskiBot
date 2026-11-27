@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Calendar\Actions\OpenGiftAction;
 use App\Models\Calendar;
 use App\Models\GiftDay;
 use App\Models\MorningDelivery;
 use App\Models\TelegramUser;
 use App\Models\WidgetMessage;
-use App\Telegram\Actions\AnswerWidgetAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Artisan;
 use function Pest\Laravel\postJson;
 use function Pest\Laravel\putJson;
 use function Pest\Laravel\withHeader;
-use function Pest\Laravel\withSession;
 
 uses(RefreshDatabase::class);
 
@@ -37,7 +36,7 @@ test('список автора показывает новые календар
     $first = Calendar::factory()->create(['author_id' => $imported->author_id]);
     $second = Calendar::factory()->create(['author_id' => $imported->author_id]);
 
-    withSession(['telegram_id' => $imported->author_id])->get('/app')->assertOk()->assertSeeInOrder([
+    asMiniAppViewer($imported->author_id)->get('/app')->assertOk()->assertSeeInOrder([
         'href="/app?calendar='.$second->id.'"',
         'href="/app?calendar='.$first->id.'"',
         'href="/app?calendar='.$imported->id.'"',
@@ -62,18 +61,19 @@ test('календарь вручается по закреплённому ID �
 
     $start(1, 333, 'first_name')->assertNoContent();
     expect($calendar->refresh()->claimed_at)->toBeNull()
-        ->and(WidgetMessage::count())->toBe(0);
+        ->and(WidgetMessage::whereNotNull('calendar_id')->count())->toBe(0);
     Artisan::call('calendar:morning');
     expect(MorningDelivery::count())->toBe(0);
 
     Carbon::setTestNow('2026-12-01 07:01:00 UTC');
     $start(2, $recipientId, $newUsername)->assertNoContent();
     expect($calendar->refresh()->claimed_at?->timestamp)->toBe(now()->timestamp);
-    $message = WidgetMessage::query()->whereNull('gift_date')->sole();
+    $message = WidgetMessage::query()->whereNotNull('photo')->sole();
     expect(MorningDelivery::query()->where('gift_date', '2026-12-01')->sole()->status)->toBe('sent');
     expect($message->recipient_id)->toBe($recipientId)
         ->and($message->calendar_id)->toBe($calendar->id)
-        ->and(app(AnswerWidgetAction::class)->execute($recipientId, $message->id, 'open:1'))->toContain('Вопрос дня');
+        ->and($message->app_path)->toBe('/app/received/'.$calendar->id)
+        ->and(app(OpenGiftAction::class)->execute($recipientId, $calendar->id, '2026-12-01')->text)->toBe('Вопрос дня');
     $opened = $first->refresh()->opened_at?->timestamp;
     expect($opened)->toBe(now()->timestamp);
 
@@ -97,7 +97,7 @@ test('до вручения по ID автор может менять буду�
         'days' => [['date' => $gift->date, 'text' => 'Выбери любимый фильм.']],
     ];
     $url = '/app/calendars/'.$calendar->id;
-    withSession(['telegram_id' => $calendar->author_id])->putJson($url, $payload)->assertSuccessful();
+    asMiniAppViewer($calendar->author_id)->putJson($url, $payload)->assertSuccessful();
     expect($gift->refresh()->text)->toBe('Выбери любимый фильм.');
     $payload['username'] = 'another_person';
     putJson($url, $payload)->assertUnprocessable();
